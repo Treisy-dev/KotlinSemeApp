@@ -1,45 +1,117 @@
 package org.example.project.screens
 
+import org.example.project.data.repository.SettingsRepository
 import org.example.project.mvi.BaseViewModel
-import org.example.project.mvi.UiEffect
-import org.example.project.mvi.UiEvent
 import org.example.project.mvi.UiState
+import org.example.project.mvi.UiEvent
+import org.example.project.mvi.UiEffect
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 data class SettingsState(
-    val isDarkTheme: Boolean = false,
+    val isDarkMode: Boolean = false,
+    val themeMode: String = "system",
     val language: String = "en",
-    val isLoading: Boolean = false
+    val isLoading: Boolean = false,
+    val error: String? = null
 ) : UiState
 
 sealed class SettingsEvent : UiEvent {
-    data object ToggleTheme : SettingsEvent()
-    data class ChangeLanguage(val language: String) : SettingsEvent()
-    data object ClearHistory : SettingsEvent()
+    data class SetDarkMode(val enabled: Boolean) : SettingsEvent()
+    data class SetThemeMode(val mode: String) : SettingsEvent()
+    data class SetLanguage(val language: String) : SettingsEvent()
+    object LoadSettings : SettingsEvent()
+    object ClearAllData : SettingsEvent()
+    object ClearError : SettingsEvent()
 }
 
 sealed class SettingsEffect : UiEffect {
-    data object ThemeChanged : SettingsEffect()
-    data object LanguageChanged : SettingsEffect()
-    data object HistoryCleared : SettingsEffect()
+    data class ShowError(val message: String) : SettingsEffect()
+    data class ShowSuccess(val message: String) : SettingsEffect()
+    object ShowClearConfirmation : SettingsEffect()
 }
 
-class SettingsViewModel : BaseViewModel<SettingsState, SettingsEvent, SettingsEffect>(SettingsState()) {
-    
+class SettingsViewModel(
+    private val settingsRepository: SettingsRepository
+) : BaseViewModel<SettingsState, SettingsEvent, SettingsEffect>(SettingsState()) {
+
+    init {
+        handleEvent(SettingsEvent.LoadSettings)
+    }
+
     override fun handleEvent(event: SettingsEvent) {
         when (event) {
-            is SettingsEvent.ToggleTheme -> {
-                setState { copy(isDarkTheme = !isDarkTheme) }
-                setEffect { SettingsEffect.ThemeChanged }
+            is SettingsEvent.SetDarkMode -> {
+                viewModelScope.launch {
+                    try {
+                        settingsRepository.setDarkMode(event.enabled)
+                        setState { copy(isDarkMode = event.enabled) }
+                        setEffect { SettingsEffect.ShowSuccess("Theme updated") }
+                    } catch (e: Exception) {
+                        setEffect { SettingsEffect.ShowError("Failed to update theme: ${e.message}") }
+                    }
+                }
             }
-            is SettingsEvent.ChangeLanguage -> {
-                setState { copy(language = event.language) }
-                setEffect { SettingsEffect.LanguageChanged }
+            is SettingsEvent.SetThemeMode -> {
+                viewModelScope.launch {
+                    try {
+                        settingsRepository.setThemeMode(event.mode)
+                        setState { copy(themeMode = event.mode) }
+                        setEffect { SettingsEffect.ShowSuccess("Theme mode updated") }
+                    } catch (e: Exception) {
+                        setEffect { SettingsEffect.ShowError("Failed to update theme mode: ${e.message}") }
+                    }
+                }
             }
-            is SettingsEvent.ClearHistory -> {
-                setState { copy(isLoading = true) }
-                // TODO: Implement history clearing
-                setState { copy(isLoading = false) }
-                setEffect { SettingsEffect.HistoryCleared }
+            is SettingsEvent.SetLanguage -> {
+                viewModelScope.launch {
+                    try {
+                        settingsRepository.setLanguage(event.language)
+                        setState { copy(language = event.language) }
+                        setEffect { SettingsEffect.ShowSuccess("Language updated") }
+                    } catch (e: Exception) {
+                        setEffect { SettingsEffect.ShowError("Failed to update language: ${e.message}") }
+                    }
+                }
+            }
+            is SettingsEvent.LoadSettings -> {
+                viewModelScope.launch {
+                    setState { copy(isLoading = true, error = null) }
+                    
+                    try {
+                        settingsRepository.isDarkMode().collect { isDark ->
+                            setState { copy(isDarkMode = isDark) }
+                        }
+                        
+                        settingsRepository.getThemeMode().collect { themeMode ->
+                            setState { copy(themeMode = themeMode) }
+                        }
+                        
+                        settingsRepository.getLanguage().collect { language ->
+                            setState { copy(language = language) }
+                        }
+                    } catch (e: Exception) {
+                        setState { copy(error = "Failed to load settings: ${e.message}") }
+                    } finally {
+                        setState { copy(isLoading = false) }
+                    }
+                }
+            }
+            is SettingsEvent.ClearAllData -> {
+                viewModelScope.launch {
+                    try {
+                        settingsRepository.clearAllData()
+                        setEffect { SettingsEffect.ShowSuccess("All data cleared") }
+                        handleEvent(SettingsEvent.LoadSettings)
+                    } catch (e: Exception) {
+                        setEffect { SettingsEffect.ShowError("Failed to clear data: ${e.message}") }
+                    }
+                }
+            }
+            is SettingsEvent.ClearError -> {
+                setState { copy(error = null) }
             }
         }
     }

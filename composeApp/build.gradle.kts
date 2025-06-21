@@ -10,6 +10,7 @@ plugins {
     alias(libs.plugins.composeHotReload)
     alias(libs.plugins.google.services)
     alias(libs.plugins.firebase.crashlytics)
+    alias(libs.plugins.kotlinx.serialization)
 }
 
 kotlin {
@@ -49,6 +50,10 @@ kotlin {
             implementation(libs.voyager.transitions)
             // Koin
             implementation(libs.koin.core)
+            // KotlinX Serialization
+            implementation(libs.kotlinx.serialization.json)
+            // KotlinX DateTime
+            implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.5.0")
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -58,6 +63,8 @@ kotlin {
             implementation(libs.kotlinx.coroutinesSwing)
             // Koin
             implementation(libs.koin.core)
+            // Java AWT for desktop features
+            implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
         }
     }
 }
@@ -99,8 +106,21 @@ compose.desktop {
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "org.example.project"
+            packageName = "SemeApp"
             packageVersion = "1.0.0"
+            
+            windows {
+                menuGroup = "SemeApp"
+                upgradeUuid = "89f599e6-3d33-4b3c-8b3d-3d33f599e689"
+            }
+            
+            macOS {
+                bundleID = "org.example.project"
+            }
+            
+            linux {
+                debMaintainer = "semeapp@example.com"
+            }
         }
     }
 }

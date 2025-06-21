@@ -2,17 +2,18 @@ package org.example.project
 
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
-import org.example.project.di.sharedModule
-import org.koin.core.context.startKoin
-import org.example.project.App
+import androidx.compose.ui.window.rememberWindowState
+import org.example.project.di.initKoin
+import org.example.project.di.desktopModule
 
 fun main() = application {
-    startKoin {
-        modules(sharedModule)
-    }
+    // Initialize Koin with desktop-specific module
+    initKoin(desktopModule)
+    
     Window(
         onCloseRequest = ::exitApplication,
-        title = "SemeApp",
+        title = "SemeApp - AI Chat",
+        state = rememberWindowState()
     ) {
         App()
     }

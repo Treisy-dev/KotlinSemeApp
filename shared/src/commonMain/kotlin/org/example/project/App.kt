@@ -15,7 +15,8 @@ import org.example.project.ui.design.lightScheme
 
 @Composable
 fun App() {
-    val appTheme by remember { mutableStateOf(AppTheme("default", false)) }
+    val appTheme by remember { mutableStateOf(AppTheme("system", false)) }
+    
     CompositionLocalProvider(LocalTheme provides appTheme) {
         MaterialTheme(
             colorScheme = if (LocalTheme.current.isDark) darkScheme else lightScheme

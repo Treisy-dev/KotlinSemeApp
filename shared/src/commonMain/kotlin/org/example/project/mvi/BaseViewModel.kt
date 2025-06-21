@@ -19,7 +19,7 @@ interface UiEffect
 abstract class BaseViewModel<State : UiState, Event : UiEvent, Effect : UiEffect>(
     initialState: State
 ) {
-    private val viewModelScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+    protected val viewModelScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     
     private val _state = MutableStateFlow(initialState)
     val state: StateFlow<State> = _state.asStateFlow()
