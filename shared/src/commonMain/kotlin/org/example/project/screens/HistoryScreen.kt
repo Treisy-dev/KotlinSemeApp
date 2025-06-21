@@ -13,24 +13,23 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import org.example.project.navigation.SharedScreen
-import org.koin.core.context.GlobalContext
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import org.example.project.screens.ChatScreenRoute
+import org.koin.mp.KoinPlatform.getKoin
 
 @Composable
-fun HistoryScreen() {
-    val navigator = LocalNavigator.currentOrThrow
-    val viewModel: HistoryViewModel = remember { GlobalContext.get().get<HistoryViewModel>() }
+fun HistoryScreen(viewModel: HistoryViewModel, navigator: Navigator) {
     val state by viewModel.state.collectAsState()
     
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             when (effect) {
                 is HistoryEffect.NavigateToChat -> {
-                    navigator.push(SharedScreen.Chat)
+                    navigator.push(ChatScreenRoute())
                 }
                 is HistoryEffect.ShowError -> {
                     // TODO: Show error toast
@@ -251,9 +250,11 @@ private fun formatTimestamp(timestamp: kotlinx.datetime.Instant): String {
     }
 }
 
-object HistoryScreenRoute : Screen {
+class HistoryScreenRoute : Screen {
     @Composable
     override fun Content() {
-        HistoryScreen()
+        val navigator = LocalNavigator.currentOrThrow
+        val viewModel: HistoryViewModel = getKoin().get()
+        HistoryScreen(viewModel = viewModel, navigator = navigator)
     }
 } 

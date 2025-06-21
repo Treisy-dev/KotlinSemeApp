@@ -7,7 +7,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import cafe.adriel.voyager.navigator.Navigator
-import org.example.project.navigation.SharedScreen
+import cafe.adriel.voyager.transitions.SlideTransition
+import org.example.project.screens.HistoryScreenRoute
 import org.example.project.ui.design.AppTheme
 import org.example.project.ui.design.LocalTheme
 import org.example.project.ui.design.darkScheme
@@ -21,9 +22,9 @@ fun App() {
         MaterialTheme(
             colorScheme = if (LocalTheme.current.isDark) darkScheme else lightScheme
         ) {
-            Navigator(
-                screen = SharedScreen.Chat,
-            )
+            Navigator(screen = HistoryScreenRoute()) { navigator ->
+                SlideTransition(navigator)
+            }
         }
     }
 } 

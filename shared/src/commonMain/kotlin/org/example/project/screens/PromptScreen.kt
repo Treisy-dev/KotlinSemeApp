@@ -14,21 +14,21 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import org.example.project.navigation.SharedScreen
-import org.koin.core.context.GlobalContext
+import org.example.project.screens.ChatScreenRoute
+import org.example.project.screens.SettingsScreenRoute
+import org.koin.mp.KoinPlatform.getKoin
 
 @Composable
-fun PromptScreen() {
-    val navigator = LocalNavigator.currentOrThrow
-    val viewModel: PromptViewModel = remember { GlobalContext.get().get<PromptViewModel>() }
+fun PromptScreen(viewModel: PromptViewModel, navigator: Navigator) {
     val state by viewModel.state.collectAsState()
     
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             when (effect) {
                 is PromptEffect.NavigateToChat -> {
-                    navigator.push(SharedScreen.Chat)
+                    navigator.push(ChatScreenRoute())
                 }
                 is PromptEffect.ShowError -> {
                     // TODO: Show error toast
@@ -56,7 +56,7 @@ fun PromptScreen() {
                 text = "New Chat",
                 style = MaterialTheme.typography.headlineSmall
             )
-            IconButton(onClick = { navigator.push(SharedScreen.Settings) }) {
+            IconButton(onClick = { navigator.push(SettingsScreenRoute()) }) {
                 Icon(Icons.Default.Settings, contentDescription = "Settings")
             }
         }
@@ -195,9 +195,11 @@ fun PromptScreen() {
     }
 }
 
-object PromptScreenRoute : Screen {
+class PromptScreenRoute : Screen {
     @Composable
     override fun Content() {
-        PromptScreen()
+        val navigator = LocalNavigator.currentOrThrow
+        val viewModel: PromptViewModel = getKoin().get()
+        PromptScreen(viewModel = viewModel, navigator = navigator)
     }
 } 

@@ -12,14 +12,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import org.example.project.navigation.SharedScreen
-import org.koin.core.context.GlobalContext
+import org.koin.mp.KoinPlatform.getKoin
 
 @Composable
-fun SettingsScreen() {
-    val navigator = LocalNavigator.currentOrThrow
-    val viewModel: SettingsViewModel = remember { GlobalContext.get().get<SettingsViewModel>() }
+fun SettingsScreen(viewModel: SettingsViewModel, navigator: Navigator) {
     val state by viewModel.state.collectAsState()
     
     LaunchedEffect(Unit) {
@@ -312,9 +310,11 @@ fun SettingsScreen() {
     }
 }
 
-object SettingsScreenRoute : Screen {
+class SettingsScreenRoute : Screen {
     @Composable
     override fun Content() {
-        SettingsScreen()
+        val navigator = LocalNavigator.currentOrThrow
+        val viewModel: SettingsViewModel = getKoin().get()
+        SettingsScreen(viewModel = viewModel, navigator = navigator)
     }
 } 

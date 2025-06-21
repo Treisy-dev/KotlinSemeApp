@@ -14,16 +14,20 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import org.example.project.navigation.SharedScreen
-import org.example.project.data.model.ChatMessage
-import org.koin.core.context.GlobalContext
 import kotlinx.coroutines.launch
+import org.example.project.data.model.ChatMessage
+import org.example.project.screens.HistoryScreenRoute
+import org.example.project.screens.SettingsScreenRoute
+import org.koin.mp.KoinPlatform.getKoin
 
 @Composable
-fun ChatScreen() {
-    val navigator = LocalNavigator.currentOrThrow
-    val viewModel: ChatViewModel = remember { GlobalContext.get().get<ChatViewModel>() }
+fun ChatScreen(
+    modifier: Modifier = Modifier,
+    viewModel: ChatViewModel,
+    navigator: Navigator
+) {
     val state by viewModel.state.collectAsState()
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
@@ -38,10 +42,10 @@ fun ChatScreen() {
                     // TODO: Show success toast
                 }
                 is ChatEffect.NavigateToSettings -> {
-                    navigator.push(SharedScreen.Settings)
+                    navigator.push(SettingsScreenRoute())
                 }
                 is ChatEffect.NavigateToHistory -> {
-                    navigator.push(SharedScreen.History)
+                    navigator.push(HistoryScreenRoute())
                 }
             }
         }
@@ -65,14 +69,14 @@ fun ChatScreen() {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(onClick = { navigator.push(SharedScreen.History) }) {
+            IconButton(onClick = { navigator.push(HistoryScreenRoute()) }) {
                 Icon(Icons.Default.History, contentDescription = "History")
             }
             Text(
                 text = "Chat with Gemini",
                 style = MaterialTheme.typography.headlineSmall
             )
-            IconButton(onClick = { navigator.push(SharedScreen.Settings) }) {
+            IconButton(onClick = { navigator.push(SettingsScreenRoute()) }) {
                 Icon(Icons.Default.Settings, contentDescription = "Settings")
             }
         }
@@ -310,9 +314,11 @@ fun MessageCard(
     }
 }
 
-object ChatScreenRoute : Screen {
+class ChatScreenRoute : Screen {
     @Composable
     override fun Content() {
-        ChatScreen()
+        val navigator = LocalNavigator.currentOrThrow
+        val viewModel: ChatViewModel = getKoin().get()
+        ChatScreen(viewModel = viewModel, navigator = navigator)
     }
 } 

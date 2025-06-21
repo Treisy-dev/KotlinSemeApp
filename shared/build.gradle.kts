@@ -1,5 +1,6 @@
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -17,9 +18,19 @@ kotlin {
         }
     }
     
-    iosX64()
-    iosArm64()
-    iosSimulatorArm64()
+    val xcf = XCFramework()
+    
+    listOf(
+        iosArm64(),
+        iosSimulatorArm64()
+    ).forEach {
+        it.binaries.framework {
+            baseName = "shared"
+            xcf.add(this)
+            freeCompilerArgs += "-Xbinary=bundleId=org.example.project.SemeApp.shared"
+        }
+    }
+    
     jvm()
     
     sourceSets {
@@ -48,6 +59,8 @@ kotlin {
                 implementation(libs.voyager.transitions)
                 // KotlinX DateTime
                 implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.5.0")
+                // UUID
+                implementation("com.benasher44:uuid:0.8.2")
             }
         }
         val commonTest by getting {
@@ -66,9 +79,13 @@ kotlin {
                 implementation(libs.ktor.client.cio)
             }
         }
-        val iosX64Main by getting
         val iosArm64Main by getting
         val iosSimulatorArm64Main by getting
+        val iosMain by creating {
+            dependsOn(commonMain)
+            iosArm64Main.dependsOn(this)
+            iosSimulatorArm64Main.dependsOn(this)
+        }
     }
 }
 
