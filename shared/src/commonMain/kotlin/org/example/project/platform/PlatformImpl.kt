@@ -1,6 +1,8 @@
 package org.example.project.platform
 
 import kotlinx.coroutines.flow.Flow
+import org.example.project.data.model.ChatMessage
+import org.example.project.data.model.ChatSession
 
 class PlatformImpl : Platform {
     override val name: String = "Desktop"
@@ -25,6 +27,11 @@ class PlatformImpl : Platform {
     }
     
     override suspend fun saveToGallery(imagePath: String): Boolean {
+        // Will be implemented in desktop-specific code
+        return false
+    }
+    
+    override suspend fun exportData(sessions: List<ChatSession>, messages: List<ChatMessage>): Boolean {
         // Will be implemented in desktop-specific code
         return false
     }

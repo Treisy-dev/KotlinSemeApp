@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.Flow
 interface ChatDatabase {
     fun getMessages(sessionId: String): Flow<List<ChatMessage>>
     fun getAllSessions(): Flow<List<ChatSession>>
+    fun getAllMessages(): Flow<List<ChatMessage>>
     suspend fun insertMessage(message: ChatMessage)
     suspend fun createSession(sessionId: String, title: String)
     suspend fun updateSession(sessionId: String, lastMessage: String, hasImage: Boolean)
@@ -26,6 +27,10 @@ class ChatDatabaseImpl : ChatDatabase {
     
     override fun getAllSessions(): Flow<List<ChatSession>> {
         return kotlinx.coroutines.flow.flowOf(sessions)
+    }
+    
+    override fun getAllMessages(): Flow<List<ChatMessage>> {
+        return kotlinx.coroutines.flow.flowOf(messages)
     }
     
     override suspend fun insertMessage(message: ChatMessage) {

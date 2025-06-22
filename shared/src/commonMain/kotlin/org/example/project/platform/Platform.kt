@@ -1,6 +1,8 @@
 package org.example.project.platform
 
 import kotlinx.coroutines.flow.Flow
+import org.example.project.data.model.ChatMessage
+import org.example.project.data.model.ChatSession
 
 interface Platform {
     val name: String
@@ -16,6 +18,9 @@ interface Platform {
     
     // Storage
     suspend fun saveToGallery(imagePath: String): Boolean
+    
+    // Export functionality
+    suspend fun exportData(sessions: List<ChatSession>, messages: List<ChatMessage>): Boolean
     
     // Analytics
     fun logEvent(eventName: String, parameters: Map<String, String> = emptyMap())

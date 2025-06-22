@@ -7,14 +7,19 @@ import org.example.project.di.initKoin
 import org.example.project.di.desktopModule
 
 fun main() = application {
+    println("Starting SemeApp Desktop...")
+    
     // Initialize Koin with desktop-specific module
+    println("Initializing Koin with desktop module...")
     initKoin(desktopModule)
+    println("Koin initialized successfully")
     
     Window(
         onCloseRequest = ::exitApplication,
         title = "SemeApp - AI Chat",
         state = rememberWindowState()
     ) {
+        println("Creating AppDesktop...")
         AppDesktop()
     }
 }

@@ -19,6 +19,12 @@ val desktopModule = module {
         println("Initializing DesktopShareSheet")
         DesktopShareSheet() 
     }
-    single<FilePicker> { FilePicker() }
-    single<ChatDatabase> { DesktopDatabase() }
+    single<FilePicker> { 
+        println("Initializing FilePicker")
+        FilePicker() 
+    }
+    single<ChatDatabase> { 
+        println("Initializing DesktopDatabase")
+        DesktopDatabase() 
+    }
 } 

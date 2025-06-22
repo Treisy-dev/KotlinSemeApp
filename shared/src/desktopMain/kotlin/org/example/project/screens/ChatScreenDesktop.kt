@@ -25,7 +25,8 @@ import org.koin.compose.koinInject
 
 @Composable
 fun ChatScreenDesktop(
-    viewModel: ChatViewModel = koinInject()
+    viewModel: ChatViewModel = koinInject(),
+    sessionId: String? = null
 ) {
     val state by viewModel.state.collectAsState()
     val focusRequester = remember { FocusRequester() }
@@ -34,6 +35,13 @@ fun ChatScreenDesktop(
     
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
+    
+    // Load session when sessionId changes
+    LaunchedEffect(sessionId) {
+        if (sessionId != null) {
+            viewModel.handleEvent(ChatEvent.LoadSession(sessionId))
+        }
+    }
     
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->

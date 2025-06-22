@@ -21,6 +21,15 @@ import org.example.project.data.model.ChatMessage
 import org.example.project.screens.HistoryScreenRoute
 import org.example.project.screens.SettingsScreenRoute
 import org.koin.mp.KoinPlatform.getKoin
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.automirrored.filled.Chat
+import androidx.compose.material.icons.automirrored.filled.Send
+import org.example.project.platform.LocalImage
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.ui.draw.clip
+import org.koin.compose.koinInject
 
 @Composable
 fun ChatScreen(
@@ -271,22 +280,15 @@ fun MessageCard(
                 )
                 
                 // Image if present
-                message.imagePath?.let { imagePath ->
+                if (message.imagePath != null) {
                     Spacer(modifier = Modifier.height(8.dp))
-                    // TODO: Load and display image
-                    Card(
-                        modifier = Modifier.fillMaxWidth().height(120.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surface
-                        )
-                    ) {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text("Image: $imagePath")
-                        }
-                    }
+                    LocalImage(
+                        path = message.imagePath,
+                        contentDescription = "User selected image",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(8.dp))
+                    )
                 }
                 
                 // Share button for AI responses
@@ -301,8 +303,8 @@ fun MessageCard(
                             modifier = Modifier.size(24.dp)
                         ) {
                             Icon(
-                                Icons.Default.Share,
-                                contentDescription = "Share",
+                                Icons.Default.ContentCopy,
+                                contentDescription = "Copy to clipboard",
                                 modifier = Modifier.size(16.dp),
                                 tint = MaterialTheme.colorScheme.onSecondaryContainer
                             )

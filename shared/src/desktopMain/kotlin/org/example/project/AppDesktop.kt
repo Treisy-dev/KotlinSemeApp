@@ -19,6 +19,7 @@ import org.example.project.ui.design.lightScheme
 fun AppDesktop() {
     val appTheme by remember { mutableStateOf(AppTheme("system", false)) }
     var selectedTab by remember { mutableStateOf(0) }
+    var currentSessionId by remember { mutableStateOf<String?>(null) }
     
     CompositionLocalProvider(LocalTheme provides appTheme) {
         MaterialTheme(
@@ -51,9 +52,19 @@ fun AppDesktop() {
                         .padding(paddingValues)
                 ) {
                     when (selectedTab) {
-                        0 -> ChatScreenDesktop()
-                        1 -> HistoryScreenDesktop()
-                        2 -> PromptScreenDesktop()
+                        0 -> ChatScreenDesktop(sessionId = currentSessionId)
+                        1 -> HistoryScreenDesktop(
+                            onSessionSelected = { sessionId ->
+                                currentSessionId = sessionId
+                                selectedTab = 0
+                            }
+                        )
+                        2 -> PromptScreenDesktop(
+                            onNavigateToChat = { sessionId ->
+                                currentSessionId = sessionId
+                                selectedTab = 0
+                            }
+                        )
                         3 -> SettingsScreenDesktop()
                     }
                 }

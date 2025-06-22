@@ -21,7 +21,8 @@ import org.koin.compose.koinInject
 
 @Composable
 fun HistoryScreenDesktop(
-    viewModel: HistoryViewModel = koinInject()
+    viewModel: HistoryViewModel = koinInject(),
+    onSessionSelected: (String) -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
     
@@ -31,7 +32,7 @@ fun HistoryScreenDesktop(
         viewModel.effect.collect { effect ->
             when (effect) {
                 is HistoryEffect.NavigateToChat -> {
-                    // Navigation handled by tabs in desktop
+                    onSessionSelected(effect.sessionId)
                 }
                 is HistoryEffect.ShowError -> {
                     // TODO: Show error toast

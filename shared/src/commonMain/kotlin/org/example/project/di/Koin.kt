@@ -39,7 +39,7 @@ val sharedModule: Module = module {
     
     // Data layer
     single { GeminiApiService() }
-    single<ChatDatabase> { ChatDatabaseImpl() }
+    // ChatDatabase will be provided by platform-specific modules
     single<SettingsStorage> { SettingsStorageImpl() }
     
     // Repositories
@@ -50,6 +50,6 @@ val sharedModule: Module = module {
     // ViewModels
     factory { ChatViewModel(get(), get(), get()) }
     factory { SettingsViewModel(get()) }
-    factory { PromptViewModel(get(), get(), get()) }
+    factory { PromptViewModel(get(), get()) }
     factory { HistoryViewModel(get()) }
 } 

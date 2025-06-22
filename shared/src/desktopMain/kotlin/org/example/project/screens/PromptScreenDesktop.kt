@@ -20,7 +20,8 @@ import org.koin.compose.koinInject
 
 @Composable
 fun PromptScreenDesktop(
-    viewModel: PromptViewModel = koinInject()
+    viewModel: PromptViewModel = koinInject(),
+    onNavigateToChat: (String) -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
     val focusRequester = remember { FocusRequester() }
@@ -30,9 +31,15 @@ fun PromptScreenDesktop(
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             when (effect) {
-                is PromptEffect.NavigateToChat -> {}
-                is PromptEffect.ShowError -> {}
-                is PromptEffect.ShowSuccess -> {}
+                is PromptEffect.NavigateToChat -> {
+                    onNavigateToChat(effect.sessionId)
+                }
+                is PromptEffect.ShowError -> {
+                    println("Error: ${effect.message}")
+                }
+                is PromptEffect.ShowSuccess -> {
+                    println("Success: ${effect.message}")
+                }
             }
         }
     }

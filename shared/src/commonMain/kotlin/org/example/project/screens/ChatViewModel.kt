@@ -58,10 +58,14 @@ class ChatViewModel(
             is ChatEvent.ShareMessage -> {
                 viewModelScope.launch {
                     try {
-                        shareSheet.shareText(event.message.content, "Shared from SemeApp")
-                        setEffect { ChatEffect.ShowSuccess("Message shared successfully") }
+                        val success = shareSheet.copyToClipboard(event.message.content)
+                        if (success) {
+                            setEffect { ChatEffect.ShowSuccess("Message copied to clipboard") }
+                        } else {
+                            setEffect { ChatEffect.ShowError("Failed to copy message to clipboard") }
+                        }
                     } catch (e: Exception) {
-                        setEffect { ChatEffect.ShowError("Failed to share message: ${e.message}") }
+                        setEffect { ChatEffect.ShowError("Failed to copy message: ${e.message}") }
                     }
                 }
             }
