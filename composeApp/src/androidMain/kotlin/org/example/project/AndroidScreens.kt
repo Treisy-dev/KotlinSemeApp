@@ -15,6 +15,9 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.example.project.screens.*
 import org.koin.mp.KoinPlatform.getKoin
+import androidx.compose.ui.platform.LocalContext
+import java.io.File
+import org.example.project.platform.LocalImage
 
 @Composable
 fun ChatScreen() {
@@ -248,6 +251,13 @@ fun PromptScreen() {
     val viewModel = getKoin().get<PromptViewModel>()
     val state by viewModel.state.collectAsState()
     
+    val imagePicker = rememberImagePicker { imagePath ->
+        println("Android PromptScreen: ImagePicker callback with path: $imagePath")
+        if (imagePath != null) {
+            viewModel.handleEvent(PromptEvent.SelectImage(imagePath))
+        }
+    }
+    
     Column(
         modifier = Modifier.fillMaxSize().padding(16.dp)
     ) {
@@ -271,7 +281,10 @@ fun PromptScreen() {
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Button(
-                        onClick = { viewModel.handleEvent(PromptEvent.PickImage) },
+                        onClick = { 
+                            println("Android PromptScreen: Gallery button clicked")
+                            imagePicker.pickFromGallery() 
+                        },
                         modifier = Modifier.weight(1f)
                     ) {
                         Icon(Icons.Default.Image, contentDescription = null)
@@ -280,12 +293,47 @@ fun PromptScreen() {
                     }
                     
                     Button(
-                        onClick = { viewModel.handleEvent(PromptEvent.TakePhoto) },
+                        onClick = { 
+                            println("Android PromptScreen: Camera button clicked")
+                            imagePicker.takePhoto() 
+                        },
                         modifier = Modifier.weight(1f)
                     ) {
                         Icon(Icons.Default.CameraAlt, contentDescription = null)
                         Spacer(modifier = Modifier.width(4.dp))
                         Text("Camera")
+                    }
+                }
+                
+                // Selected image preview
+                state.imagePath?.let { imagePath ->
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(200.dp)
+                        ) {
+                            // Load and display image
+                            LocalImage(
+                                path = imagePath,
+                                modifier = Modifier.fillMaxSize(),
+                                contentDescription = "Selected image"
+                            )
+                            
+                            IconButton(
+                                onClick = { 
+                                    println("Android PromptScreen: Clear image button clicked")
+                                    viewModel.handleEvent(PromptEvent.ClearImage) 
+                                },
+                                modifier = Modifier.align(Alignment.TopEnd)
+                            ) {
+                                Icon(Icons.Default.Close, contentDescription = "Remove image")
+                            }
+                        }
                     }
                 }
             }
@@ -337,6 +385,16 @@ fun PromptScreen() {
             }
             Spacer(modifier = Modifier.width(8.dp))
             Text("Send to Gemini")
+        }
+        
+        // Error display
+        state.error?.let { error ->
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = error,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall
+            )
         }
     }
 }

@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import org.example.project.screens.PromptViewModel
 import org.example.project.screens.PromptEvent
 import org.koin.compose.koinInject
+import org.example.project.platform.LocalImage
 
 @Composable
 fun PromptScreenDesktop(
@@ -99,18 +100,19 @@ fun PromptScreenDesktop(
                 ) {
                     Row {
                         IconButton(
-                            onClick = { viewModel.handleEvent(PromptEvent.PickImage) }
+                            onClick = { 
+                                println("Desktop: PickImage button clicked")
+                                viewModel.handleEvent(PromptEvent.PickImage) 
+                            }
                         ) {
                             Icon(Icons.Default.Image, contentDescription = "Add image")
                         }
-                        IconButton(
-                            onClick = { viewModel.handleEvent(PromptEvent.TakePhoto) }
-                        ) {
-                            Icon(Icons.Default.Camera, contentDescription = "Take photo")
-                        }
                         if (state.imagePath != null) {
                             IconButton(
-                                onClick = { viewModel.handleEvent(PromptEvent.ClearImage) }
+                                onClick = { 
+                                    println("Desktop: ClearImage button clicked")
+                                    viewModel.handleEvent(PromptEvent.ClearImage) 
+                                }
                             ) {
                                 Icon(Icons.Default.Clear, contentDescription = "Clear image")
                             }
@@ -118,7 +120,10 @@ fun PromptScreenDesktop(
                     }
                     
                     Button(
-                        onClick = { viewModel.handleEvent(PromptEvent.SendPrompt) },
+                        onClick = { 
+                            println("Desktop: SendPrompt button clicked")
+                            viewModel.handleEvent(PromptEvent.SendPrompt) 
+                        },
                         enabled = state.prompt.isNotBlank() && !state.isLoading
                     ) {
                         if (state.isLoading) {
@@ -147,7 +152,11 @@ fun PromptScreenDesktop(
                             modifier = Modifier.fillMaxSize(),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text("Image: $imagePath")
+                            LocalImage(
+                                path = imagePath,
+                                modifier = Modifier.fillMaxSize(),
+                                contentDescription = "Selected image"
+                            )
                         }
                     }
                 }

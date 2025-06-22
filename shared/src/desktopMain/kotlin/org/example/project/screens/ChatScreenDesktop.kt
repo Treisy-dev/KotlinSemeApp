@@ -205,13 +205,6 @@ fun ChatScreenDesktop(
                     )
                 )
                 
-                // Debug: показываем текущее значение состояния
-                Text(
-                    text = "Debug: '${state.currentMessage}'",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                
                 Spacer(modifier = Modifier.width(8.dp))
                 IconButton(
                     onClick = { 

@@ -16,6 +16,11 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.encodeToString
 import org.example.project.data.model.ChatMessage
 import org.example.project.data.model.ChatSession
+import javax.swing.SwingUtilities
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.runBlocking
 
 class DesktopPlatform : Platform {
     override val name: String = "Desktop"
@@ -25,7 +30,9 @@ class DesktopPlatform : Platform {
     private val properties = Properties()
     
     init {
+        println("DesktopPlatform: Initializing DesktopPlatform...")
         loadSettings()
+        println("DesktopPlatform: DesktopPlatform initialized successfully")
     }
     
     private fun loadSettings() {
@@ -46,19 +53,53 @@ class DesktopPlatform : Platform {
         }
     }
     
-    override suspend fun pickImage(): String? = withContext(Dispatchers.IO) {
-        val fileChooser = JFileChooser()
-        fileChooser.dialogTitle = "Select Image"
-        fileChooser.fileFilter = FileNameExtensionFilter(
-            "Image files", "jpg", "jpeg", "png", "gif", "bmp", "webp"
-        )
+    // Альтернативный метод для выбора файла через Compose диалог
+    suspend fun pickImageWithComposeDialog(): String? {
+        println("DesktopPlatform: pickImageWithComposeDialog called (thread: ${Thread.currentThread().name})")
         
-        val result = fileChooser.showOpenDialog(null)
-        if (result == JFileChooser.APPROVE_OPTION) {
-            fileChooser.selectedFile.absolutePath
-        } else {
-            null
+        // Простая реализация - возвращаем тестовый путь для проверки
+        // В реальном приложении здесь был бы Compose диалог
+        println("DesktopPlatform: Using fallback approach")
+        return null
+    }
+    
+    // Простой метод без корутин
+    private fun pickImageSimple(): String? {
+        println("DesktopPlatform: pickImageSimple called (thread: ${Thread.currentThread().name})")
+        try {
+            println("DesktopPlatform: Creating JFileChooser...")
+            val fileChooser = JFileChooser()
+            println("DesktopPlatform: JFileChooser created successfully")
+            fileChooser.dialogTitle = "Select Image"
+            fileChooser.fileFilter = FileNameExtensionFilter(
+                "Image files", "jpg", "jpeg", "png", "gif", "bmp", "webp"
+            )
+            println("DesktopPlatform: About to call showOpenDialog...")
+            val dialogResult = fileChooser.showOpenDialog(null)
+            println("DesktopPlatform: JFileChooser result = $dialogResult")
+            if (dialogResult == JFileChooser.APPROVE_OPTION) {
+                val selectedPath = fileChooser.selectedFile.absolutePath
+                println("DesktopPlatform: Selected file = $selectedPath")
+                return selectedPath
+            } else {
+                println("DesktopPlatform: No file selected or dialog cancelled")
+                return null
+            }
+        } catch (e: Exception) {
+            println("DesktopPlatform: Exception in pickImageSimple: ${e.message}")
+            e.printStackTrace()
+            return null
         }
+    }
+    
+    override suspend fun pickImage(): String? {
+        println("=== DesktopPlatform: pickImage START ===")
+        println("DesktopPlatform: pickImage called (thread: ${Thread.currentThread().name})")
+        println("DesktopPlatform: About to call pickImageSimple")
+        val result = pickImageSimple()
+        println("DesktopPlatform: pickImageSimple returned: $result")
+        println("=== DesktopPlatform: pickImage END ===")
+        return result
     }
     
     override suspend fun takePhoto(): String? {
@@ -197,6 +238,37 @@ class DesktopPlatform : Platform {
         } catch (e: Exception) {
             println("Error copying to clipboard: ${e.message}")
             false
+        }
+    }
+    
+    // Альтернативный метод с runBlocking
+    suspend fun pickImageWithRunBlocking(): String? {
+        println("DesktopPlatform: pickImageWithRunBlocking called (thread: ${Thread.currentThread().name})")
+        
+        return runBlocking {
+            println("DesktopPlatform: Inside runBlocking (thread: ${Thread.currentThread().name})")
+            try {
+                val fileChooser = JFileChooser()
+                println("DesktopPlatform: JFileChooser created in runBlocking")
+                fileChooser.dialogTitle = "Select Image"
+                fileChooser.fileFilter = FileNameExtensionFilter(
+                    "Image files", "jpg", "jpeg", "png", "gif", "bmp", "webp"
+                )
+                println("DesktopPlatform: About to call showOpenDialog in runBlocking")
+                val dialogResult = fileChooser.showOpenDialog(null)
+                println("DesktopPlatform: JFileChooser result in runBlocking = $dialogResult")
+                if (dialogResult == JFileChooser.APPROVE_OPTION) {
+                    println("DesktopPlatform: Selected file in runBlocking = ${fileChooser.selectedFile.absolutePath}")
+                    fileChooser.selectedFile.absolutePath
+                } else {
+                    println("DesktopPlatform: No file selected in runBlocking")
+                    null
+                }
+            } catch (e: Exception) {
+                println("DesktopPlatform: Exception in runBlocking: ${e.message}")
+                e.printStackTrace()
+                null
+            }
         }
     }
 }

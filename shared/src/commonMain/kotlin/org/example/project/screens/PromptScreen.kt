@@ -19,6 +19,7 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import org.example.project.screens.ChatScreenRoute
 import org.example.project.screens.SettingsScreenRoute
 import org.koin.mp.KoinPlatform.getKoin
+import org.example.project.platform.LocalImage
 
 @Composable
 fun PromptScreen(viewModel: PromptViewModel, navigator: Navigator) {
@@ -83,7 +84,10 @@ fun PromptScreen(viewModel: PromptViewModel, navigator: Navigator) {
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Button(
-                        onClick = { viewModel.handleEvent(PromptEvent.PickImage) },
+                        onClick = { 
+                            println("Common PromptScreen: Gallery button clicked")
+                            viewModel.handleEvent(PromptEvent.PickImage) 
+                        },
                         modifier = Modifier.weight(1f)
                     ) {
                         Icon(Icons.Default.Image, contentDescription = null)
@@ -92,7 +96,10 @@ fun PromptScreen(viewModel: PromptViewModel, navigator: Navigator) {
                     }
                     
                     Button(
-                        onClick = { viewModel.handleEvent(PromptEvent.TakePhoto) },
+                        onClick = { 
+                            println("Common PromptScreen: Camera button clicked")
+                            viewModel.handleEvent(PromptEvent.TakePhoto) 
+                        },
                         modifier = Modifier.weight(1f)
                     ) {
                         Icon(Icons.Default.CameraAlt, contentDescription = null)
@@ -113,18 +120,18 @@ fun PromptScreen(viewModel: PromptViewModel, navigator: Navigator) {
                                 .fillMaxWidth()
                                 .height(200.dp)
                         ) {
-                            // TODO: Load and display image
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .background(MaterialTheme.colorScheme.surfaceVariant),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text("Image Preview")
-                            }
+                            // Load and display image
+                            LocalImage(
+                                path = imagePath,
+                                modifier = Modifier.fillMaxSize(),
+                                contentDescription = "Selected image"
+                            )
                             
                             IconButton(
-                                onClick = { viewModel.handleEvent(PromptEvent.ClearImage) },
+                                onClick = { 
+                                    println("Common PromptScreen: Clear image button clicked")
+                                    viewModel.handleEvent(PromptEvent.ClearImage) 
+                                },
                                 modifier = Modifier.align(Alignment.TopEnd)
                             ) {
                                 Icon(Icons.Default.Close, contentDescription = "Remove image")
@@ -154,7 +161,10 @@ fun PromptScreen(viewModel: PromptViewModel, navigator: Navigator) {
                 
                 TextField(
                     value = state.prompt,
-                    onValueChange = { viewModel.handleEvent(PromptEvent.UpdatePrompt(it)) },
+                    onValueChange = { 
+                        println("Common PromptScreen: TextField onValueChange: $it")
+                        viewModel.handleEvent(PromptEvent.UpdatePrompt(it)) 
+                    },
                     modifier = Modifier.fillMaxWidth(),
                     placeholder = { Text("Describe what you want to know or ask...") },
                     minLines = 3,
@@ -167,7 +177,10 @@ fun PromptScreen(viewModel: PromptViewModel, navigator: Navigator) {
         
         // Send button
         Button(
-            onClick = { viewModel.handleEvent(PromptEvent.SendPrompt) },
+            onClick = { 
+                println("Common PromptScreen: Send button clicked")
+                viewModel.handleEvent(PromptEvent.SendPrompt) 
+            },
             modifier = Modifier.fillMaxWidth(),
             enabled = state.prompt.isNotBlank() && !state.isLoading
         ) {

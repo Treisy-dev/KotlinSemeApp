@@ -57,21 +57,31 @@ class PromptViewModel(
     }
 
     private fun selectImage(path: String) {
+        println("PromptViewModel: selectImage called with path: $path")
         setState { copy(imagePath = path) }
     }
 
     private fun pickImage() {
+        println("PromptViewModel: pickImage called")
+        println("PromptViewModel: platform = $platform")
         viewModelScope.launch {
+            println("PromptViewModel: About to call platform.pickImage()")
             val imagePath = platform.pickImage()
+            println("PromptViewModel: platform.pickImage() returned: $imagePath")
             if (imagePath != null) {
+                println("PromptViewModel: Setting imagePath to: $imagePath")
                 setState { copy(imagePath = imagePath) }
+            } else {
+                println("PromptViewModel: imagePath is null, not updating state")
             }
         }
     }
 
     private fun takePhoto() {
+        println("PromptViewModel: takePhoto called")
         viewModelScope.launch {
             val imagePath = platform.takePhoto()
+            println("PromptViewModel: platform.takePhoto() returned: $imagePath")
             if (imagePath != null) {
                 setState { copy(imagePath = imagePath) }
             }
@@ -79,6 +89,7 @@ class PromptViewModel(
     }
 
     private fun clearImage() {
+        println("PromptViewModel: clearImage called")
         setState { copy(imagePath = null) }
     }
 
