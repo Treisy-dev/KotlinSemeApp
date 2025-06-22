@@ -43,12 +43,15 @@ class DesktopShareSheet : ShareSheet {
     
     override suspend fun copyToClipboard(text: String): Boolean = withContext(Dispatchers.IO) {
         try {
+            println("DesktopShareSheet: Attempting to copy text to clipboard: '${text.take(50)}...'")
             val clipboard = Toolkit.getDefaultToolkit().systemClipboard
             val selection = StringSelection(text)
             clipboard.setContents(selection, selection)
+            println("DesktopShareSheet: Successfully copied text to clipboard")
             true
         } catch (e: Exception) {
-            println("Error copying to clipboard: ${e.message}")
+            println("DesktopShareSheet: Error copying to clipboard: ${e.message}")
+            e.printStackTrace()
             false
         }
     }

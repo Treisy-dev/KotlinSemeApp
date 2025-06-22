@@ -310,24 +310,25 @@ fun DesktopMessageCard(
                     )
                 }
                 
-                // Share button for AI responses
-                if (!message.isUser) {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End
+                // Copy button for all messages
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    IconButton(
+                        onClick = onShareClick,
+                        modifier = Modifier.size(24.dp)
                     ) {
-                        IconButton(
-                            onClick = onShareClick,
-                            modifier = Modifier.size(24.dp)
-                        ) {
-                            Icon(
-                                Icons.Default.Share,
-                                contentDescription = localizationManager.getString("share"),
-                                modifier = Modifier.size(16.dp),
-                                tint = MaterialTheme.colorScheme.onSecondaryContainer
-                            )
-                        }
+                        Icon(
+                            Icons.Default.ContentCopy,
+                            contentDescription = localizationManager.getString("copy"),
+                            modifier = Modifier.size(16.dp),
+                            tint = if (message.isUser) 
+                                MaterialTheme.colorScheme.onPrimaryContainer 
+                            else 
+                                MaterialTheme.colorScheme.onSecondaryContainer
+                        )
                     }
                 }
             }

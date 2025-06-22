@@ -35,6 +35,9 @@ object Strings {
             "chat_error" to "Error sending message",
             "chat_retry" to "Retry",
             "chat_new_session" to "New Chat",
+            "chat_copy_message" to "Copy message",
+            "chat_message_copied" to "Message copied to clipboard",
+            "chat_copy_failed" to "Failed to copy message",
             
             // History Screen
             "history_title" to "Chat History",
@@ -110,6 +113,9 @@ object Strings {
             "chat_error" to "Ошибка отправки сообщения",
             "chat_retry" to "Повторить",
             "chat_new_session" to "Новый чат",
+            "chat_copy_message" to "Копировать сообщение",
+            "chat_message_copied" to "Сообщение скопировано в буфер обмена",
+            "chat_copy_failed" to "Не удалось скопировать сообщение",
             
             // History Screen
             "history_title" to "История чатов",

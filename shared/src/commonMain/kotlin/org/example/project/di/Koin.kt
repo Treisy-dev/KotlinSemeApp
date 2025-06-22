@@ -38,7 +38,7 @@ fun initKoin(appModule: Module) {
 val sharedModule: Module = module {
     // Platform-specific implementations (will be provided by platform modules)
     // single<Platform> { PlatformImpl() } // Убрано - будет предоставлено платформенными модулями
-    single<ShareSheet> { ShareSheetImpl() }
+    // single<ShareSheet> { ShareSheetImpl() } // Убрано - будет предоставлено платформенными модулями
     single { ImageEncoder() }
     
     // Localization and Theme

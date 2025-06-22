@@ -4,6 +4,7 @@ import org.example.project.data.repository.ChatRepository
 import org.example.project.data.repository.SettingsRepository
 import org.example.project.share.ShareSheet
 import org.example.project.mvi.BaseViewModel
+import org.example.project.localization.LocalizationManagerProvider
 import kotlinx.coroutines.launch
 
 class ChatViewModel(
@@ -11,6 +12,8 @@ class ChatViewModel(
     private val settingsRepository: SettingsRepository,
     private val shareSheet: ShareSheet
 ) : BaseViewModel<ChatState, ChatEvent, ChatEffect>(ChatState()) {
+
+    private val localizationManager = LocalizationManagerProvider.getInstance()
 
     override fun handleEvent(event: ChatEvent) {
         when (event) {
@@ -58,14 +61,18 @@ class ChatViewModel(
             is ChatEvent.ShareMessage -> {
                 viewModelScope.launch {
                     try {
+                        println("ChatViewModel: ShareMessage event received for message: '${event.message.content.take(50)}...'")
                         val success = shareSheet.copyToClipboard(event.message.content)
+                        println("ChatViewModel: copyToClipboard result: $success")
                         if (success) {
-                            setEffect { ChatEffect.ShowSuccess("Message copied to clipboard") }
+                            setEffect { ChatEffect.ShowSuccess(localizationManager.getString("chat_message_copied")) }
                         } else {
-                            setEffect { ChatEffect.ShowError("Failed to copy message to clipboard") }
+                            setEffect { ChatEffect.ShowError(localizationManager.getString("chat_copy_failed")) }
                         }
                     } catch (e: Exception) {
-                        setEffect { ChatEffect.ShowError("Failed to copy message: ${e.message}") }
+                        println("ChatViewModel: Exception during copy: ${e.message}")
+                        e.printStackTrace()
+                        setEffect { ChatEffect.ShowError("${localizationManager.getString("chat_copy_failed")}: ${e.message}") }
                     }
                 }
             }
