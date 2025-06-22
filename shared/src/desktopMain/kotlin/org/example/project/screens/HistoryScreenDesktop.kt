@@ -18,6 +18,7 @@ import org.example.project.screens.HistoryViewModel
 import org.example.project.screens.HistoryEvent
 import org.example.project.data.model.ChatSession
 import org.koin.compose.koinInject
+import org.example.project.localization.LocalLocalizationManager
 
 @Composable
 fun HistoryScreenDesktop(
@@ -25,6 +26,7 @@ fun HistoryScreenDesktop(
     onSessionSelected: (String) -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
+    val localizationManager = LocalLocalizationManager.current
     
     println("HistoryScreen: sessions count: ${state.sessions.size}")
     
@@ -57,13 +59,13 @@ fun HistoryScreenDesktop(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Chat History",
+                text = localizationManager.getString("history_title"),
                 style = MaterialTheme.typography.headlineSmall
             )
             IconButton(
                 onClick = { viewModel.handleEvent(HistoryEvent.ClearAllHistory) }
             ) {
-                Icon(Icons.Default.Delete, contentDescription = "Clear all")
+                Icon(Icons.Default.Delete, contentDescription = localizationManager.getString("delete"))
             }
         }
         
@@ -75,17 +77,17 @@ fun HistoryScreenDesktop(
             FilterChip(
                 selected = state.filterType == FilterType.ALL,
                 onClick = { viewModel.handleEvent(HistoryEvent.SetFilter(FilterType.ALL)) },
-                label = { Text("All") }
+                label = { Text(localizationManager.getString("history_filter_all")) }
             )
             FilterChip(
                 selected = state.filterType == FilterType.TEXT_ONLY,
                 onClick = { viewModel.handleEvent(HistoryEvent.SetFilter(FilterType.TEXT_ONLY)) },
-                label = { Text("Text Only") }
+                label = { Text(localizationManager.getString("history_filter_text")) }
             )
             FilterChip(
                 selected = state.filterType == FilterType.WITH_IMAGE,
                 onClick = { viewModel.handleEvent(HistoryEvent.SetFilter(FilterType.WITH_IMAGE)) },
-                label = { Text("With Image") }
+                label = { Text(localizationManager.getString("history_filter_image")) }
             )
         }
         
@@ -115,13 +117,13 @@ fun HistoryScreenDesktop(
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
-                        text = "No chat history",
+                        text = localizationManager.getString("history_empty"),
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "Start a new conversation to see it here",
+                        text = localizationManager.getString("chat_new_session"),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -176,6 +178,7 @@ fun DesktopSessionCard(
     onSessionClick: () -> Unit,
     onDeleteClick: () -> Unit
 ) {
+    val localizationManager = LocalLocalizationManager.current
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
@@ -225,7 +228,7 @@ fun DesktopSessionCard(
             IconButton(onClick = onDeleteClick) {
                 Icon(
                     Icons.Default.Delete,
-                    contentDescription = "Delete session",
+                    contentDescription = localizationManager.getString("history_delete"),
                     tint = MaterialTheme.colorScheme.error
                 )
             }

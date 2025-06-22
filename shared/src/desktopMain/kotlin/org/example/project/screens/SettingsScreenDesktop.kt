@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.example.project.screens.SettingsViewModel
 import org.example.project.screens.SettingsEvent
+import org.example.project.localization.LocalLocalizationManager
 import org.koin.compose.koinInject
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -21,6 +22,7 @@ fun SettingsScreenDesktop(
     viewModel: SettingsViewModel = koinInject()
 ) {
     val state by viewModel.state.collectAsState()
+    val localizationManager = LocalLocalizationManager.current
     
     println("SettingsScreen: isDarkMode: ${state.isDarkMode}, language: ${state.language}")
     
@@ -44,7 +46,7 @@ fun SettingsScreenDesktop(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Settings",
+                text = localizationManager.getString("settings_title"),
                 style = MaterialTheme.typography.headlineSmall
             )
         }
@@ -65,7 +67,7 @@ fun SettingsScreenDesktop(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "Theme",
+                        text = localizationManager.getString("settings_theme"),
                         style = MaterialTheme.typography.titleMedium
                     )
                 }
@@ -80,7 +82,7 @@ fun SettingsScreenDesktop(
                             onClick = { viewModel.handleEvent(SettingsEvent.SetThemeMode("light")) }
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Light")
+                        Text(localizationManager.getString("theme_light"))
                     }
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -91,7 +93,7 @@ fun SettingsScreenDesktop(
                             onClick = { viewModel.handleEvent(SettingsEvent.SetThemeMode("dark")) }
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Dark")
+                        Text(localizationManager.getString("theme_dark"))
                     }
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -102,7 +104,7 @@ fun SettingsScreenDesktop(
                             onClick = { viewModel.handleEvent(SettingsEvent.SetThemeMode("system")) }
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("System")
+                        Text(localizationManager.getString("theme_system"))
                     }
                 }
             }
@@ -124,7 +126,7 @@ fun SettingsScreenDesktop(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "Language",
+                        text = localizationManager.getString("settings_language"),
                         style = MaterialTheme.typography.titleMedium
                     )
                 }
@@ -139,7 +141,7 @@ fun SettingsScreenDesktop(
                             onClick = { viewModel.handleEvent(SettingsEvent.SetLanguage("en")) }
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("English")
+                        Text(localizationManager.getString("language_english"))
                     }
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -150,7 +152,7 @@ fun SettingsScreenDesktop(
                             onClick = { viewModel.handleEvent(SettingsEvent.SetLanguage("ru")) }
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Русский")
+                        Text(localizationManager.getString("language_russian"))
                     }
                 }
             }
@@ -172,7 +174,7 @@ fun SettingsScreenDesktop(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "Data Management",
+                        text = localizationManager.getString("settings_data_management"),
                         style = MaterialTheme.typography.titleMedium
                     )
                 }
@@ -185,11 +187,11 @@ fun SettingsScreenDesktop(
                 ) {
                     Icon(Icons.Default.Delete, contentDescription = null)
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Clear All Data")
+                    Text(localizationManager.getString("clear_all_data"))
                 }
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "This will delete all chat history and settings",
+                    text = localizationManager.getString("clear_all_data_description"),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -212,24 +214,24 @@ fun SettingsScreenDesktop(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "About",
+                        text = localizationManager.getString("settings_about"),
                         style = MaterialTheme.typography.titleMedium
                     )
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    text = "SemeApp - AI Chat",
+                    text = localizationManager.getString("app_name_full"),
                     style = MaterialTheme.typography.titleSmall
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "Version 1.0.0",
+                    text = localizationManager.getString("app_version"),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "Powered by Google Gemini AI",
+                    text = localizationManager.getString("powered_by"),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

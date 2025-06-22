@@ -18,7 +18,7 @@ struct PromptView: View {
                         Text("Add Image (Optional)")
                             .font(.title2)
                             .fontWeight(.medium)
-                        
+
                         HStack(spacing: 12) {
                             Button(action: { showingImagePicker = true }) {
                                 HStack {

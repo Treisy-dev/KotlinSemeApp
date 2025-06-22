@@ -1,6 +1,7 @@
 package org.example.project.screens
 
 import org.example.project.data.repository.SettingsRepository
+import org.example.project.localization.LocalizationManagerProvider
 import org.example.project.mvi.BaseViewModel
 import org.example.project.mvi.UiState
 import org.example.project.mvi.UiEvent
@@ -37,6 +38,8 @@ class SettingsViewModel(
     private val settingsRepository: SettingsRepository
 ) : BaseViewModel<SettingsState, SettingsEvent, SettingsEffect>(SettingsState()) {
 
+    private val localizationManager = LocalizationManagerProvider.getInstance()
+
     init {
         handleEvent(SettingsEvent.LoadSettings)
     }
@@ -69,6 +72,7 @@ class SettingsViewModel(
                 viewModelScope.launch {
                     try {
                         settingsRepository.setLanguage(event.language)
+                        localizationManager.setLanguage(event.language)
                         setState { copy(language = event.language) }
                         setEffect { SettingsEffect.ShowSuccess("Language updated") }
                     } catch (e: Exception) {
@@ -90,6 +94,7 @@ class SettingsViewModel(
                         }
                         
                         settingsRepository.getLanguage().collect { language ->
+                            localizationManager.setLanguage(language)
                             setState { copy(language = language) }
                         }
                     } catch (e: Exception) {

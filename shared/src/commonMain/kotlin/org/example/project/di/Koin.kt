@@ -17,6 +17,8 @@ import org.example.project.platform.PlatformImpl
 import org.example.project.platform.ImageEncoder
 import org.example.project.share.ShareSheet
 import org.example.project.share.ShareSheetImpl
+import org.example.project.localization.LocalizationManager
+import org.example.project.localization.LocalizationManagerProvider
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 import org.koin.dsl.module
@@ -36,6 +38,9 @@ val sharedModule: Module = module {
     // single<Platform> { PlatformImpl() } // Убрано - будет предоставлено платформенными модулями
     single<ShareSheet> { ShareSheetImpl() }
     single { ImageEncoder() }
+    
+    // Localization
+    single { LocalizationManagerProvider.getInstance() }
     
     // Data layer
     single { GeminiApiService() }

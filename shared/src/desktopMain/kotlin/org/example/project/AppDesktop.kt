@@ -14,14 +14,17 @@ import org.example.project.ui.design.AppTheme
 import org.example.project.ui.design.LocalTheme
 import org.example.project.ui.design.darkScheme
 import org.example.project.ui.design.lightScheme
+import org.example.project.localization.LocalizationManagerProvider
+import org.example.project.localization.LocalLocalizationManager
 
 @Composable
 fun AppDesktop() {
     val appTheme by remember { mutableStateOf(AppTheme("system", false)) }
     var selectedTab by remember { mutableStateOf(0) }
     var currentSessionId by remember { mutableStateOf<String?>(null) }
+    val localizationManager = remember { LocalizationManagerProvider.getInstance() }
     
-    CompositionLocalProvider(LocalTheme provides appTheme) {
+    CompositionLocalProvider(LocalTheme provides appTheme, LocalLocalizationManager provides localizationManager) {
         MaterialTheme(
             colorScheme = if (LocalTheme.current.isDark) darkScheme else lightScheme
         ) {
@@ -29,10 +32,10 @@ fun AppDesktop() {
                 bottomBar = {
                     NavigationBar {
                         val tabs = listOf(
-                            TabItem("Chat", Icons.Default.Chat, 0),
-                            TabItem("History", Icons.Default.History, 1),
-                            TabItem("Prompts", Icons.Default.Edit, 2),
-                            TabItem("Settings", Icons.Default.Settings, 3)
+                            TabItem(localizationManager.getString("nav_chat"), Icons.Default.Chat, 0),
+                            TabItem(localizationManager.getString("nav_history"), Icons.Default.History, 1),
+                            TabItem(localizationManager.getString("nav_prompts"), Icons.Default.Edit, 2),
+                            TabItem(localizationManager.getString("nav_settings"), Icons.Default.Settings, 3)
                         )
                         
                         tabs.forEach { tab ->

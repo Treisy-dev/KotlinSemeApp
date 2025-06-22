@@ -18,6 +18,7 @@ import org.example.project.screens.PromptViewModel
 import org.example.project.screens.PromptEvent
 import org.koin.compose.koinInject
 import org.example.project.platform.LocalImage
+import org.example.project.localization.LocalLocalizationManager
 
 @Composable
 fun PromptScreenDesktop(
@@ -26,6 +27,7 @@ fun PromptScreenDesktop(
 ) {
     val state by viewModel.state.collectAsState()
     val focusRequester = remember { FocusRequester() }
+    val localizationManager = LocalLocalizationManager.current
     
     println("PromptScreen: prompt changed to: '${state.prompt}'")
     
@@ -54,7 +56,7 @@ fun PromptScreenDesktop(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "New Chat",
+                text = localizationManager.getString("prompt_title"),
                 style = MaterialTheme.typography.headlineSmall
             )
         }
@@ -75,7 +77,7 @@ fun PromptScreenDesktop(
                     modifier = Modifier
                         .fillMaxWidth()
                         .focusRequester(focusRequester),
-                    placeholder = { Text("Enter your prompt...") },
+                    placeholder = { Text(localizationManager.getString("prompt_placeholder")) },
                     maxLines = 4,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
                     keyboardActions = KeyboardActions(
@@ -105,7 +107,7 @@ fun PromptScreenDesktop(
                                 viewModel.handleEvent(PromptEvent.PickImage) 
                             }
                         ) {
-                            Icon(Icons.Default.Image, contentDescription = "Add image")
+                            Icon(Icons.Default.Image, contentDescription = localizationManager.getString("chat_attach_image"))
                         }
                         if (state.imagePath != null) {
                             IconButton(
@@ -114,7 +116,7 @@ fun PromptScreenDesktop(
                                     viewModel.handleEvent(PromptEvent.ClearImage) 
                                 }
                             ) {
-                                Icon(Icons.Default.Clear, contentDescription = "Clear image")
+                                Icon(Icons.Default.Clear, contentDescription = localizationManager.getString("prompt_clear"))
                             }
                         }
                     }
@@ -135,7 +137,7 @@ fun PromptScreenDesktop(
                             Icon(Icons.Default.Send, contentDescription = null)
                         }
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Send")
+                        Text(localizationManager.getString("prompt_send"))
                     }
                 }
                 
@@ -155,7 +157,7 @@ fun PromptScreenDesktop(
                             LocalImage(
                                 path = imagePath,
                                 modifier = Modifier.fillMaxSize(),
-                                contentDescription = "Selected image"
+                                contentDescription = localizationManager.getString("chat_attach_image")
                             )
                         }
                     }

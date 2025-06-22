@@ -25,12 +25,14 @@ import org.koin.compose.koinInject
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.draw.clip
 import org.example.project.platform.LocalImage
+import org.example.project.localization.LocalLocalizationManager
 
 @Composable
 fun ChatScreenDesktop(
     viewModel: ChatViewModel = koinInject(),
     sessionId: String? = null
 ) {
+    val localizationManager = LocalLocalizationManager.current
     val state by viewModel.state.collectAsState()
     val focusRequester = remember { FocusRequester() }
     
@@ -84,7 +86,7 @@ fun ChatScreenDesktop(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Chat with Gemini",
+                text = localizationManager.getString("nav_chat"),
                 style = MaterialTheme.typography.headlineSmall
             )
         }
@@ -113,13 +115,13 @@ fun ChatScreenDesktop(
                             )
                             Spacer(modifier = Modifier.height(16.dp))
                             Text(
-                                text = "Start a conversation",
+                                text = localizationManager.getString("chat_new_session"),
                                 style = MaterialTheme.typography.titleMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
-                                text = "Ask Gemini anything or share an image for analysis",
+                                text = localizationManager.getString("chat_placeholder"),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 textAlign = TextAlign.Center
@@ -158,7 +160,7 @@ fun ChatScreenDesktop(
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
-                                    text = "Gemini is thinking...",
+                                    text = localizationManager.getString("chat_typing"),
                                     style = MaterialTheme.typography.bodyMedium
                                 )
                             }
@@ -186,7 +188,7 @@ fun ChatScreenDesktop(
                     modifier = Modifier
                         .weight(1f)
                         .focusRequester(focusRequester),
-                    placeholder = { Text("Type your message...") },
+                    placeholder = { Text(localizationManager.getString("chat_placeholder")) },
                     maxLines = 4,
                     singleLine = false,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
@@ -216,7 +218,7 @@ fun ChatScreenDesktop(
                 ) {
                     Icon(
                         Icons.Default.Send,
-                        contentDescription = "Send",
+                        contentDescription = localizationManager.getString("chat_send"),
                         tint = if (state.currentMessage.isNotBlank() && !state.isLoading) 
                             MaterialTheme.colorScheme.primary 
                         else 
@@ -253,7 +255,7 @@ fun ChatScreenDesktop(
                     ) {
                         Icon(
                             Icons.Default.Close,
-                            contentDescription = "Clear error",
+                            contentDescription = localizationManager.getString("close"),
                             tint = MaterialTheme.colorScheme.onErrorContainer
                         )
                     }
@@ -268,6 +270,7 @@ fun DesktopMessageCard(
     message: ChatMessage,
     onShareClick: () -> Unit
 ) {
+    val localizationManager = LocalLocalizationManager.current
     val alignment = if (message.isUser) Alignment.End else Alignment.Start
     val backgroundColor = if (message.isUser) 
         MaterialTheme.colorScheme.primaryContainer 
@@ -300,7 +303,7 @@ fun DesktopMessageCard(
                     Spacer(modifier = Modifier.height(8.dp))
                     LocalImage(
                         path = message.imagePath,
-                        contentDescription = "User selected image",
+                        contentDescription = localizationManager.getString("chat_attach_image"),
                         modifier = Modifier
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(8.dp))
@@ -320,7 +323,7 @@ fun DesktopMessageCard(
                         ) {
                             Icon(
                                 Icons.Default.Share,
-                                contentDescription = "Share",
+                                contentDescription = localizationManager.getString("share"),
                                 modifier = Modifier.size(16.dp),
                                 tint = MaterialTheme.colorScheme.onSecondaryContainer
                             )
