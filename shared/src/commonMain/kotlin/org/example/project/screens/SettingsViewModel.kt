@@ -2,6 +2,7 @@ package org.example.project.screens
 
 import org.example.project.data.repository.SettingsRepository
 import org.example.project.localization.LocalizationManagerProvider
+import org.example.project.platform.getPlatform
 import org.example.project.mvi.BaseViewModel
 import org.example.project.mvi.UiState
 import org.example.project.mvi.UiEvent
@@ -10,6 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.first
 
 data class SettingsState(
     val isDarkMode: Boolean = false,
@@ -39,6 +41,7 @@ class SettingsViewModel(
 ) : BaseViewModel<SettingsState, SettingsEvent, SettingsEffect>(SettingsState()) {
 
     private val localizationManager = LocalizationManagerProvider.getInstance()
+    private val platform = getPlatform()
 
     init {
         handleEvent(SettingsEvent.LoadSettings)
@@ -85,18 +88,24 @@ class SettingsViewModel(
                     setState { copy(isLoading = true, error = null) }
                     
                     try {
-                        settingsRepository.isDarkMode().collect { isDark ->
-                            setState { copy(isDarkMode = isDark) }
+                        // Загружаем настройки из хранилища
+                        val storedLanguage = settingsRepository.getLanguage().first()
+                        val storedThemeMode = settingsRepository.getThemeMode().first()
+                        val storedDarkMode = settingsRepository.isDarkMode().first()
+                        
+                        // Обновляем состояние
+                        setState { 
+                            copy(
+                                language = storedLanguage,
+                                themeMode = storedThemeMode,
+                                isDarkMode = storedDarkMode
+                            ) 
                         }
                         
-                        settingsRepository.getThemeMode().collect { themeMode ->
-                            setState { copy(themeMode = themeMode) }
-                        }
+                        // Синхронизируем с платформой и LocalizationManager
+                        platform.setLanguage(storedLanguage)
+                        localizationManager.syncLanguage(storedLanguage)
                         
-                        settingsRepository.getLanguage().collect { language ->
-                            localizationManager.setLanguage(language)
-                            setState { copy(language = language) }
-                        }
                     } catch (e: Exception) {
                         setState { copy(error = "Failed to load settings: ${e.message}") }
                     } finally {

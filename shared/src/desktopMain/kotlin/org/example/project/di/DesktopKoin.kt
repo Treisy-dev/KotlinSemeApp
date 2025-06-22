@@ -6,6 +6,8 @@ import org.example.project.platform.Platform
 import org.example.project.share.ShareSheet
 import org.example.project.data.local.ChatDatabase
 import org.example.project.data.local.DesktopDatabase
+import org.example.project.data.local.SettingsStorage
+import org.example.project.data.local.DesktopSettingsStorage
 import org.koin.dsl.module
 
 val desktopModule = module {
@@ -18,5 +20,12 @@ val desktopModule = module {
         println("Initializing DesktopShareSheet")
         DesktopShareSheet() 
     }
-    single<ChatDatabase> { DesktopDatabase() }
+    single<ChatDatabase> { 
+        println("Initializing DesktopDatabase")
+        DesktopDatabase() 
+    }
+    single<SettingsStorage> { 
+        println("Initializing DesktopSettingsStorage")
+        DesktopSettingsStorage() 
+    }
 } 

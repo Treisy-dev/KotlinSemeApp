@@ -34,6 +34,12 @@ class LocalizationManager {
             baseString
         }
     }
+    
+    fun syncLanguage(language: String) {
+        if (_currentLanguage.value != language) {
+            _currentLanguage.value = language
+        }
+    }
 }
 
 object LocalizationManagerProvider {
