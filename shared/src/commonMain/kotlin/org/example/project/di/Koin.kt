@@ -19,6 +19,8 @@ import org.example.project.share.ShareSheet
 import org.example.project.share.ShareSheetImpl
 import org.example.project.localization.LocalizationManager
 import org.example.project.localization.LocalizationManagerProvider
+import org.example.project.ui.design.ThemeManager
+import org.example.project.ui.design.ThemeManagerProvider
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 import org.koin.dsl.module
@@ -39,8 +41,9 @@ val sharedModule: Module = module {
     single<ShareSheet> { ShareSheetImpl() }
     single { ImageEncoder() }
     
-    // Localization
+    // Localization and Theme
     single { LocalizationManagerProvider.getInstance() }
+    single { ThemeManagerProvider.getInstance() }
     
     // Data layer
     single { GeminiApiService() }

@@ -75,6 +75,8 @@ kotlin {
             implementation(libs.kotlinx.coroutinesSwing)
             // Koin
             implementation(libs.koin.core)
+            // Shared module
+            implementation(projects.shared)
             // Java AWT for desktop features
             implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
         }

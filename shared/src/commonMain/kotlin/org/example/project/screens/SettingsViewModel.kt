@@ -3,6 +3,7 @@ package org.example.project.screens
 import org.example.project.data.repository.SettingsRepository
 import org.example.project.localization.LocalizationManagerProvider
 import org.example.project.platform.getPlatform
+import org.example.project.ui.design.ThemeManagerProvider
 import org.example.project.mvi.BaseViewModel
 import org.example.project.mvi.UiState
 import org.example.project.mvi.UiEvent
@@ -41,6 +42,7 @@ class SettingsViewModel(
 ) : BaseViewModel<SettingsState, SettingsEvent, SettingsEffect>(SettingsState()) {
 
     private val localizationManager = LocalizationManagerProvider.getInstance()
+    private val themeManager = ThemeManagerProvider.getInstance()
     private val platform = getPlatform()
 
     init {
@@ -53,6 +55,7 @@ class SettingsViewModel(
                 viewModelScope.launch {
                     try {
                         settingsRepository.setDarkMode(event.enabled)
+                        themeManager.setDarkMode(event.enabled)
                         setState { copy(isDarkMode = event.enabled) }
                         setEffect { SettingsEffect.ShowSuccess("Theme updated") }
                     } catch (e: Exception) {
@@ -64,6 +67,7 @@ class SettingsViewModel(
                 viewModelScope.launch {
                     try {
                         settingsRepository.setThemeMode(event.mode)
+                        themeManager.setThemeMode(event.mode)
                         setState { copy(themeMode = event.mode) }
                         setEffect { SettingsEffect.ShowSuccess("Theme mode updated") }
                     } catch (e: Exception) {
@@ -102,7 +106,7 @@ class SettingsViewModel(
                             ) 
                         }
                         
-                        // Синхронизируем с платформой и LocalizationManager
+                        // Синхронизируем с платформой, LocalizationManager и ThemeManager
                         platform.setLanguage(storedLanguage)
                         localizationManager.syncLanguage(storedLanguage)
                         

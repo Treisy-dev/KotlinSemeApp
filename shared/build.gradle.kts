@@ -82,6 +82,7 @@ kotlin {
         val desktopMain by getting {
             dependencies {
                 implementation(libs.ktor.client.cio)
+                implementation(libs.koin.core)
             }
         }
         val iosX64Main by getting
