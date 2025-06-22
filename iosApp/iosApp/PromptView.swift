@@ -2,11 +2,12 @@ import SwiftUI
 import shared
 
 struct PromptView: View {
-    @StateObject private var viewModel = PromptViewModel()
+    @StateObject private var viewModel = PromptViewModelWrapper()
     @State private var promptText = ""
     @State private var showingImagePicker = false
     @State private var showingCamera = false
     @State private var selectedImage: UIImage?
+    @State private var imagePath: String? = nil
     
     var body: some View {
         NavigationView {
@@ -53,7 +54,7 @@ struct PromptView: View {
                                     .frame(maxHeight: 200)
                                     .cornerRadius(10)
                                 
-                                Button(action: { selectedImage = nil }) {
+                                Button(action: { selectedImage = nil; imagePath = nil }) {
                                     HStack {
                                         Image(systemName: "xmark.circle.fill")
                                         Text("Remove Image")
@@ -120,24 +121,26 @@ struct PromptView: View {
             .navigationBarTitleDisplayMode(.inline)
         }
         .sheet(isPresented: $showingImagePicker) {
-            ImagePicker(selectedImage: $selectedImage, sourceType: .photoLibrary)
+            ImagePicker(selectedImage: $selectedImage, sourceType: .photoLibrary, imagePath: $imagePath)
         }
         .sheet(isPresented: $showingCamera) {
-            ImagePicker(selectedImage: $selectedImage, sourceType: .camera)
+            ImagePicker(selectedImage: $selectedImage, sourceType: .camera, imagePath: $imagePath)
         }
     }
     
     private func sendPrompt() {
         guard !promptText.isEmpty else { return }
-        viewModel.sendPrompt(promptText, imagePath: nil) // TODO: Handle image path
+        viewModel.sendPrompt(promptText, imagePath: imagePath)
         promptText = ""
         selectedImage = nil
+        imagePath = nil
     }
 }
 
 struct ImagePicker: UIViewControllerRepresentable {
     @Binding var selectedImage: UIImage?
     let sourceType: UIImagePickerController.SourceType
+    @Binding var imagePath: String?
     @Environment(\.dismiss) private var dismiss
     
     func makeUIViewController(context: Context) -> UIImagePickerController {
@@ -163,6 +166,14 @@ struct ImagePicker: UIViewControllerRepresentable {
         func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
             if let image = info[.originalImage] as? UIImage {
                 parent.selectedImage = image
+                // Сохраняем изображение во временный файл и передаем путь
+                if let data = image.jpegData(compressionQuality: 0.8) {
+                    let tempDir = NSTemporaryDirectory()
+                    let fileName = UUID().uuidString + ".jpg"
+                    let fileURL = URL(fileURLWithPath: tempDir).appendingPathComponent(fileName)
+                    try? data.write(to: fileURL)
+                    parent.imagePath = fileURL.path
+                }
             }
             parent.dismiss()
         }

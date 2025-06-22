@@ -2,7 +2,7 @@ import SwiftUI
 import shared
 
 struct SettingsView: View {
-    @StateObject private var viewModel = SettingsViewModel()
+    @StateObject private var viewModel = SettingsViewModelWrapper()
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {

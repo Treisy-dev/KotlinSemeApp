@@ -2,7 +2,7 @@ import SwiftUI
 import shared
 
 struct HistoryView: View {
-    @StateObject private var viewModel = HistoryViewModel()
+    @StateObject private var viewModel = HistoryViewModelWrapper()
     @State private var selectedFilter: FilterType = .all
     @Environment(\.dismiss) private var dismiss
     
@@ -15,19 +15,19 @@ struct HistoryView: View {
                         FilterChip(
                             title: "All",
                             isSelected: selectedFilter == .all,
-                            action: { selectedFilter = .all }
+                            action: { selectedFilter = .all; viewModel.setFilter(.all) }
                         )
                         
                         FilterChip(
                             title: "Text Only",
                             isSelected: selectedFilter == .textOnly,
-                            action: { selectedFilter = .textOnly }
+                            action: { selectedFilter = .textOnly; viewModel.setFilter(.textOnly) }
                         )
                         
                         FilterChip(
                             title: "With Image",
                             isSelected: selectedFilter == .withImage,
-                            action: { selectedFilter = .withImage }
+                            action: { selectedFilter = .withImage; viewModel.setFilter(.withImage) }
                         )
                     }
                     .padding(.horizontal)

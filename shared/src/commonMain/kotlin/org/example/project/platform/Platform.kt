@@ -33,4 +33,6 @@ interface Platform {
     // Language
     fun getLanguage(): String
     fun setLanguage(language: String)
-} 
+}
+
+expect fun getPlatform(): Platform 

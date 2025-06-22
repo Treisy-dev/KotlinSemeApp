@@ -20,11 +20,4 @@ func formatTimestamp(_ timestamp: Kotlinx_datetimeInstant) -> String {
     }
     
     return formatter.string(from: date)
-}
-
-// Local enum for iOS since we can't access the shared FilterType yet
-enum FilterType: String, CaseIterable {
-    case all = "ALL"
-    case textOnly = "TEXT_ONLY"
-    case withImage = "WITH_IMAGE"
 } 

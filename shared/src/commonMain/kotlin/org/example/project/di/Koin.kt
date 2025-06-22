@@ -11,15 +11,16 @@ import org.example.project.data.local.ChatDatabase
 import org.example.project.data.local.ChatDatabaseImpl
 import org.example.project.data.local.SettingsStorage
 import org.example.project.data.local.SettingsStorageImpl
-import org.example.project.data.remote.GeminiApi
-import org.example.project.data.remote.GeminiApiImpl
+import org.example.project.data.remote.GeminiApiService
 import org.example.project.platform.Platform
 import org.example.project.platform.PlatformImpl
+import org.example.project.platform.ImageEncoder
 import org.example.project.share.ShareSheet
 import org.example.project.share.ShareSheetImpl
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 import org.koin.dsl.module
+import org.koin.mp.KoinPlatform
 
 fun initKoin(appModule: Module) {
     startKoin {
@@ -31,27 +32,24 @@ fun initKoin(appModule: Module) {
 }
 
 val sharedModule: Module = module {
-    // Platform-specific implementations
+    // Platform-specific implementations (will be overridden by platform modules)
     single<Platform> { PlatformImpl() }
     single<ShareSheet> { ShareSheetImpl() }
+    single { ImageEncoder() }
     
     // Data layer
-    single<GeminiApi> { GeminiApiImpl() }
+    single { GeminiApiService() }
     single<ChatDatabase> { ChatDatabaseImpl() }
     single<SettingsStorage> { SettingsStorageImpl() }
     
     // Repositories
     single { ChatRepository(get(), get()) }
     single { SettingsRepository(get()) }
-    single { GeminiRepository(get()) }
+    single { GeminiRepository(get(), get()) }
     
     // ViewModels
     factory { ChatViewModel(get(), get(), get()) }
     factory { SettingsViewModel(get()) }
     factory { PromptViewModel(get(), get(), get()) }
     factory { HistoryViewModel(get()) }
-}
-
-val desktopModule: Module = module {
-    // Desktop-specific dependencies will be added here
 } 

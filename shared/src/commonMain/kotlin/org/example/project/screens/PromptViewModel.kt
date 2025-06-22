@@ -43,7 +43,9 @@ class PromptViewModel(
     override fun handleEvent(event: PromptEvent) {
         when (event) {
             is PromptEvent.UpdatePrompt -> {
+                println("PromptViewModel: UpdatePrompt event received with text: '${event.text}'")
                 setState { copy(prompt = event.text) }
+                println("PromptViewModel: State updated, prompt is now: '${currentState.prompt}'")
             }
             is PromptEvent.SelectImage -> {
                 setState { copy(imagePath = event.path) }

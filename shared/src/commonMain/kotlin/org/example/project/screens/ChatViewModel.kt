@@ -15,7 +15,9 @@ class ChatViewModel(
     override fun handleEvent(event: ChatEvent) {
         when (event) {
             is ChatEvent.UpdateMessage -> {
+                println("ChatViewModel: UpdateMessage event received with text: '${event.text}'")
                 setState { copy(currentMessage = event.text) }
+                println("ChatViewModel: State updated, currentMessage is now: '${currentState.currentMessage}'")
             }
             is ChatEvent.SendMessage -> {
                 if (event.content.isBlank()) return

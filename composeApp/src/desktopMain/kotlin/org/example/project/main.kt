@@ -15,6 +15,6 @@ fun main() = application {
         title = "SemeApp - AI Chat",
         state = rememberWindowState()
     ) {
-        App()
+        AppDesktop()
     }
 }

@@ -2,7 +2,7 @@ import SwiftUI
 import shared
 
 struct ChatView: View {
-    @StateObject private var viewModel = ChatViewModel()
+    @StateObject private var viewModel = ChatViewModelWrapper()
     @State private var messageText = ""
     @State private var showingHistory = false
     @State private var showingSettings = false
