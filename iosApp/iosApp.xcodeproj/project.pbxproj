@@ -7,14 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2A623EF72E0814E200402DD2 /* Animation - 1739814387302.json in Resources */ = {isa = PBXBuildFile; fileRef = 2A623EF62E0814E200402DD2 /* Animation - 1739814387302.json */; };
 		33D900AAD98A8AE7BE791410 /* Pods_iosApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4DAFEC08F16FEF751CBA00AB /* Pods_iosApp.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		241CDE91513963C016FE5EED /* Pods-iosApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iosApp.release.xcconfig"; path = "Target Support Files/Pods-iosApp/Pods-iosApp.release.xcconfig"; sourceTree = "<group>"; };
+		2A623EF62E0814E200402DD2 /* Animation - 1739814387302.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "Animation - 1739814387302.json"; sourceTree = "<group>"; };
 		4DAFEC08F16FEF751CBA00AB /* Pods_iosApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_iosApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5D153BE3027D2D4572F743AA /* Pods-iosApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iosApp.debug.xcconfig"; path = "Target Support Files/Pods-iosApp/Pods-iosApp.debug.xcconfig"; sourceTree = "<group>"; };
-		C38857112E06E8AE006BAF1F /* iosApp */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iosApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C38857112E06E8AE006BAF1F /* iosApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iosApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -80,6 +82,7 @@
 		B9DA97A82DC1472C00A4DA20 = {
 			isa = PBXGroup;
 			children = (
+				2A623EF62E0814E200402DD2 /* Animation - 1739814387302.json */,
 				B9DA98002DC14AA900A4DA20 /* Configuration */,
 				B9DA97B32DC1472C00A4DA20 /* iosApp */,
 				C38857122E06E8AE006BAF1F /* iosApp */,
@@ -162,6 +165,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2A623EF72E0814E200402DD2 /* Animation - 1739814387302.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

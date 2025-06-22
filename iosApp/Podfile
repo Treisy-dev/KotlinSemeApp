@@ -6,4 +6,6 @@ target 'iosApp' do
   pod 'shared', :path => '../shared'
   # и сторонний Pod
   pod 'FirebaseAnalytics'
+  pod("lottie-ios")
+
 end

@@ -42,6 +42,8 @@ kotlin {
             implementation(libs.firebase.bom)
             implementation(libs.firebase.analytics)
             implementation(libs.firebase.crashlytics)
+            // Navigation Compose
+            implementation("androidx.navigation:navigation-compose:2.7.7")
         }
         commonMain.dependencies {
             implementation(compose.runtime)
