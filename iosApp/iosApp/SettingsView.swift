@@ -28,7 +28,10 @@ struct SettingsView: View {
                                 Spacer()
                                 Toggle("", isOn: Binding(
                                     get: { viewModel.isDarkMode },
-                                    set: { viewModel.setDarkMode($0) }
+                                    set: { 
+                                        viewModel.setDarkMode($0)
+                                        FirebaseAnalyticsManager.shared.trackSettingsChanged(settingName: "dark_mode", newValue: $0 ? "enabled" : "disabled")
+                                    }
                                 ))
                             }
                             
@@ -43,19 +46,28 @@ struct SettingsView: View {
                                     ThemeChip(
                                         title: "Light",
                                         isSelected: viewModel.themeMode == "light",
-                                        action: { viewModel.setThemeMode("light") }
+                                        action: { 
+                                            viewModel.setThemeMode("light")
+                                            FirebaseAnalyticsManager.shared.trackSettingsChanged(settingName: "theme_mode", newValue: "light")
+                                        }
                                     )
                                     
                                     ThemeChip(
                                         title: "Dark",
                                         isSelected: viewModel.themeMode == "dark",
-                                        action: { viewModel.setThemeMode("dark") }
+                                        action: { 
+                                            viewModel.setThemeMode("dark")
+                                            FirebaseAnalyticsManager.shared.trackSettingsChanged(settingName: "theme_mode", newValue: "dark")
+                                        }
                                     )
                                     
                                     ThemeChip(
                                         title: "System",
                                         isSelected: viewModel.themeMode == "system",
-                                        action: { viewModel.setThemeMode("system") }
+                                        action: { 
+                                            viewModel.setThemeMode("system")
+                                            FirebaseAnalyticsManager.shared.trackSettingsChanged(settingName: "theme_mode", newValue: "system")
+                                        }
                                     )
                                 }
                             }
@@ -68,13 +80,19 @@ struct SettingsView: View {
                             LanguageChip(
                                 title: "English",
                                 isSelected: viewModel.language == "en",
-                                action: { viewModel.setLanguage("en") }
+                                action: { 
+                                    viewModel.setLanguage("en")
+                                    FirebaseAnalyticsManager.shared.trackSettingsChanged(settingName: "language", newValue: "en")
+                                }
                             )
                             
                             LanguageChip(
                                 title: "Русский",
                                 isSelected: viewModel.language == "ru",
-                                action: { viewModel.setLanguage("ru") }
+                                action: { 
+                                    viewModel.setLanguage("ru")
+                                    FirebaseAnalyticsManager.shared.trackSettingsChanged(settingName: "language", newValue: "ru")
+                                }
                             )
                         }
                     }
@@ -82,7 +100,10 @@ struct SettingsView: View {
                     // Data Management Section
                     SettingsSection(title: "Data Management") {
                         VStack(spacing: 12) {
-                            Button(action: { viewModel.clearAllData() }) {
+                            Button(action: { 
+                                viewModel.clearAllData()
+                                FirebaseAnalyticsManager.shared.trackCustomEvent(name: "data_cleared")
+                            }) {
                                 HStack {
                                     Image(systemName: "trash.fill")
                                         .foregroundColor(.red)
@@ -95,7 +116,10 @@ struct SettingsView: View {
                                 .cornerRadius(10)
                             }
                             
-                            Button(action: { viewModel.exportData() }) {
+                            Button(action: { 
+                                viewModel.exportData()
+                                FirebaseAnalyticsManager.shared.trackCustomEvent(name: "data_exported")
+                            }) {
                                 HStack {
                                     Image(systemName: "square.and.arrow.up")
                                         .foregroundColor(.blue)
@@ -131,7 +155,10 @@ struct SettingsView: View {
                             
                             Divider()
                             
-                            Button(action: { viewModel.openPrivacyPolicy() }) {
+                            Button(action: { 
+                                viewModel.openPrivacyPolicy()
+                                FirebaseAnalyticsManager.shared.trackCustomEvent(name: "privacy_policy_opened")
+                            }) {
                                 HStack {
                                     Text("Privacy Policy")
                                     Spacer()
@@ -142,7 +169,10 @@ struct SettingsView: View {
                             
                             Divider()
                             
-                            Button(action: { viewModel.openTermsOfService() }) {
+                            Button(action: { 
+                                viewModel.openTermsOfService()
+                                FirebaseAnalyticsManager.shared.trackCustomEvent(name: "terms_of_service_opened")
+                            }) {
                                 HStack {
                                     Text("Terms of Service")
                                     Spacer()
@@ -167,6 +197,7 @@ struct SettingsView: View {
         }
         .onAppear {
             viewModel.loadSettings()
+            FirebaseAnalyticsManager.shared.trackScreenView(screenName: FirebaseAnalyticsManager.ScreenNames.settings)
         }
     }
 }

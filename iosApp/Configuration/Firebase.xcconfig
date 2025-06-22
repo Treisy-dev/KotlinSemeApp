@@ -1,0 +1,6 @@
+// Firebase Configuration
+FIREBASE_CRASHLYTICS_ENABLED=1
+FIREBASE_ANALYTICS_ENABLED=1
+
+// Crashlytics Configuration
+CRASHLYTICS_DEBUG_MODE=1 

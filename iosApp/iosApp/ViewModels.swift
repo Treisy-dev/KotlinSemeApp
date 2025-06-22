@@ -26,7 +26,20 @@ class ChatViewModelWrapper: ObservableObject {
             DispatchQueue.main.async {
                 self.messages = state.messages
                 self.isLoading = state.isLoading
-                self.error = state.error
+                
+                // Handle error logging
+                if let error = state.error, error != self.error {
+                    self.error = error
+                    ErrorHandler.shared.logCustomError(
+                        message: error,
+                        context: "chat_view_model",
+                        additionalInfo: [
+                            "messages_count": state.messages.count,
+                            "is_loading": state.isLoading
+                        ]
+                    )
+                }
+                
                 self.currentMessage = state.currentMessage
             }
         }
@@ -73,7 +86,19 @@ class PromptViewModelWrapper: ObservableObject {
                 self.prompt = state.prompt
                 self.imagePath = state.imagePath
                 self.isLoading = state.isLoading
-                self.error = state.error
+                
+                // Handle error logging
+                if let error = state.error, error != self.error {
+                    self.error = error
+                    ErrorHandler.shared.logCustomError(
+                        message: error,
+                        context: "prompt_view_model",
+                        additionalInfo: [
+                            "has_image": state.imagePath != nil,
+                            "is_loading": state.isLoading
+                        ]
+                    )
+                }
             }
         }
     }
@@ -127,7 +152,20 @@ class HistoryViewModelWrapper: ObservableObject {
             DispatchQueue.main.async {
                 self.sessions = state.sessions
                 self.isLoading = state.isLoading
-                self.error = state.error
+                
+                // Handle error logging
+                if let error = state.error, error != self.error {
+                    self.error = error
+                    ErrorHandler.shared.logCustomError(
+                        message: error,
+                        context: "history_view_model",
+                        additionalInfo: [
+                            "sessions_count": state.sessions.count,
+                            "filter_type": state.filterType.name
+                        ]
+                    )
+                }
+                
                 self.filterType = FilterType.fromKmm(state.filterType)
             }
         }
@@ -194,7 +232,20 @@ class SettingsViewModelWrapper: ObservableObject {
                 self.themeMode = state.themeMode
                 self.language = state.language
                 self.isLoading = state.isLoading
-                self.error = state.error
+                
+                // Handle error logging
+                if let error = state.error, error != self.error {
+                    self.error = error
+                    ErrorHandler.shared.logCustomError(
+                        message: error,
+                        context: "settings_view_model",
+                        additionalInfo: [
+                            "theme_mode": state.themeMode,
+                            "language": state.language,
+                            "is_dark_mode": state.isDarkMode
+                        ]
+                    )
+                }
             }
         }
     }

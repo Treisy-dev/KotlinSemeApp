@@ -87,6 +87,7 @@ struct HistoryView: View {
         }
         .onAppear {
             viewModel.loadSessions()
+            FirebaseAnalyticsManager.shared.trackScreenView(screenName: FirebaseAnalyticsManager.ScreenNames.history)
         }
     }
 }

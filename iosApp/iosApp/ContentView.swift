@@ -46,6 +46,16 @@ struct ContentView: View {
                 .tag(3)
         }
         .accentColor(.blue)
+        .onChange(of: selectedTab) { newValue in
+            trackTabSwitch(newValue)
+        }
+    }
+    
+    private func trackTabSwitch(_ tabIndex: Int) {
+        let tabNames = ["chat", "history", "new_chat", "settings"]
+        if tabIndex < tabNames.count {
+            FirebaseAnalyticsManager.shared.trackTabSwitch(tabName: tabNames[tabIndex])
+        }
     }
 }
 

@@ -110,12 +110,14 @@ struct ChatView: View {
         }
         .onAppear {
             viewModel.loadMessages()
+            FirebaseAnalyticsManager.shared.trackScreenView(screenName: FirebaseAnalyticsManager.ScreenNames.chat)
         }
     }
     
     private func sendMessage() {
         guard !messageText.isEmpty else { return }
         viewModel.sendMessage(messageText)
+        FirebaseAnalyticsManager.shared.trackMessageSent()
         messageText = ""
     }
 }

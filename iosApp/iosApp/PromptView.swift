@@ -126,11 +126,15 @@ struct PromptView: View {
         .sheet(isPresented: $showingCamera) {
             ImagePicker(selectedImage: $selectedImage, sourceType: .camera, imagePath: $imagePath)
         }
+        .onAppear {
+            FirebaseAnalyticsManager.shared.trackScreenView(screenName: FirebaseAnalyticsManager.ScreenNames.newChat)
+        }
     }
     
     private func sendPrompt() {
         guard !promptText.isEmpty else { return }
         viewModel.sendPrompt(promptText, imagePath: imagePath)
+        FirebaseAnalyticsManager.shared.trackMessageSent()
         promptText = ""
         selectedImage = nil
         imagePath = nil

@@ -21,13 +21,34 @@ PODS:
     - FirebaseCoreInternal (~> 11.14.0)
     - GoogleUtilities/Environment (~> 8.1)
     - GoogleUtilities/Logger (~> 8.1)
+  - FirebaseCoreExtension (11.14.0):
+    - FirebaseCore (~> 11.14.0)
   - FirebaseCoreInternal (11.14.0):
     - "GoogleUtilities/NSData+zlib (~> 8.1)"
+  - FirebaseCrashlytics (11.14.0):
+    - FirebaseCore (~> 11.14.0)
+    - FirebaseInstallations (~> 11.0)
+    - FirebaseRemoteConfigInterop (~> 11.0)
+    - FirebaseSessions (~> 11.0)
+    - GoogleDataTransport (~> 10.0)
+    - GoogleUtilities/Environment (~> 8.1)
+    - nanopb (~> 3.30910.0)
+    - PromisesObjC (~> 2.4)
   - FirebaseInstallations (11.14.0):
     - FirebaseCore (~> 11.14.0)
     - GoogleUtilities/Environment (~> 8.1)
     - GoogleUtilities/UserDefaults (~> 8.1)
     - PromisesObjC (~> 2.4)
+  - FirebaseRemoteConfigInterop (11.14.0)
+  - FirebaseSessions (11.14.0):
+    - FirebaseCore (~> 11.14.0)
+    - FirebaseCoreExtension (~> 11.14.0)
+    - FirebaseInstallations (~> 11.0)
+    - GoogleDataTransport (~> 10.0)
+    - GoogleUtilities/Environment (~> 8.1)
+    - GoogleUtilities/UserDefaults (~> 8.1)
+    - nanopb (~> 3.30910.0)
+    - PromisesSwift (~> 2.1)
   - GoogleAdsOnDeviceConversion (2.0.0):
     - GoogleUtilities/Logger (~> 8.1)
     - GoogleUtilities/Network (~> 8.1)
@@ -54,6 +75,9 @@ PODS:
     - GoogleUtilities/Network (~> 8.1)
     - "GoogleUtilities/NSData+zlib (~> 8.1)"
     - nanopb (~> 3.30910.0)
+  - GoogleDataTransport (10.1.0):
+    - nanopb (~> 3.30910.0)
+    - PromisesObjC (~> 2.4)
   - GoogleUtilities/AppDelegateSwizzler (8.1.0):
     - GoogleUtilities/Environment
     - GoogleUtilities/Logger
@@ -88,11 +112,14 @@ PODS:
   - nanopb/decode (3.30910.0)
   - nanopb/encode (3.30910.0)
   - PromisesObjC (2.4.0)
+  - PromisesSwift (2.4.0):
+    - PromisesObjC (= 2.4.0)
   - shared (1.0.0):
     - FirebaseAnalytics
 
 DEPENDENCIES:
   - FirebaseAnalytics
+  - FirebaseCrashlytics
   - lottie-ios
   - shared (from `../shared`)
 
@@ -100,14 +127,20 @@ SPEC REPOS:
   trunk:
     - FirebaseAnalytics
     - FirebaseCore
+    - FirebaseCoreExtension
     - FirebaseCoreInternal
+    - FirebaseCrashlytics
     - FirebaseInstallations
+    - FirebaseRemoteConfigInterop
+    - FirebaseSessions
     - GoogleAdsOnDeviceConversion
     - GoogleAppMeasurement
+    - GoogleDataTransport
     - GoogleUtilities
     - lottie-ios
     - nanopb
     - PromisesObjC
+    - PromisesSwift
 
 EXTERNAL SOURCES:
   shared:
@@ -116,16 +149,22 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   FirebaseAnalytics: d604dc875290f0213b9ead8a4692cf1e91e024d9
   FirebaseCore: 8fb12caed934c900218ce66a419107db74214ade
+  FirebaseCoreExtension: 6af88594f639c1abb127bc096da32cf2c0dd69ff
   FirebaseCoreInternal: 6a3b668197644aa858fc4127578637c6767ba123
+  FirebaseCrashlytics: 7f50df2871a788468825db11a6d845c363c2ad58
   FirebaseInstallations: 863f2846bb124331b501d29c0f17f95caa2ef6bb
+  FirebaseRemoteConfigInterop: 7b74ceaa54e28863ed17fa39da8951692725eced
+  FirebaseSessions: e9a23024853074e56c9eca62be0e5ee243efd9c9
   GoogleAdsOnDeviceConversion: 5c3c8de58786e7d0a4bdecbd32c16f87d815cc9f
   GoogleAppMeasurement: 078fe9bfeed8e398253772ce81ef8690b0413b45
+  GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleUtilities: 00c88b9a86066ef77f0da2fab05f65d7768ed8e1
   lottie-ios: 96784afc26ea031d3e2b6cae342a4b8915072489
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
+  PromisesSwift: 9d77319bbe72ebf6d872900551f7eeba9bce2851
   shared: e5b57e72d94a39935a37ba3245968c1238f54caa
 
-PODFILE CHECKSUM: 2b29373f85fcfb5289b7ab3b2616dcd19fe2afb7
+PODFILE CHECKSUM: 2d9042c08307662c3b8db31e7434b92ed93dc359
 
 COCOAPODS: 1.16.2
