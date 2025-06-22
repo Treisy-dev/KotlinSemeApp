@@ -21,7 +21,17 @@ kotlin {
         }
     }
     
-    jvm("desktop")
+    jvm("desktop") {
+        compilations.all {
+            kotlinOptions {
+                jvmTarget = "11"
+                freeCompilerArgs += listOf(
+                    "-Xopt-in=kotlin.RequiresOptIn",
+                    "-Xjvm-default=all"
+                )
+            }
+        }
+    }
     
     sourceSets {
         val desktopMain by getting

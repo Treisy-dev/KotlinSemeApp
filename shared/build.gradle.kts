@@ -1,6 +1,5 @@
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -8,31 +7,37 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinx.serialization)
+    alias(libs.plugins.kotlinCocoapods)
 }
 
 kotlin {
-    androidTarget {
-        @OptIn(ExperimentalKotlinGradlePluginApi::class)
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_11)
+    androidTarget()
+    jvm("desktop") {
+        compilations.all {
+            kotlinOptions {
+                jvmTarget = "11"
+                freeCompilerArgs += listOf(
+                    "-Xopt-in=kotlin.RequiresOptIn",
+                    "-Xjvm-default=all"
+                )
+            }
         }
     }
-    
-    val xcf = XCFramework()
-    
-    listOf(
-        iosArm64(),
-        iosSimulatorArm64()
-    ).forEach {
-        it.binaries.framework {
+    iosX64()
+    iosArm64()
+    iosSimulatorArm64()
+
+    cocoapods {
+        version = "1.0.0"
+        summary = "SemeApp Shared"
+        homepage = "https://github.com/Semmer-sv/KotlinSemeApp"
+        ios.deploymentTarget = "14.1"
+        framework {
             baseName = "shared"
-            xcf.add(this)
-            freeCompilerArgs += "-Xbinary=bundleId=org.example.project.SemeApp.shared"
         }
+        pod("FirebaseAnalytics")
     }
-    
-    jvm()
-    
+
     sourceSets {
         val commonMain by getting {
             dependencies {
@@ -74,15 +79,13 @@ kotlin {
                 implementation(libs.ktor.client.cio)
             }
         }
-        val jvmMain by getting {
-            dependencies {
-                implementation(libs.ktor.client.cio)
-            }
-        }
+        val desktopMain by getting
+        val iosX64Main by getting
         val iosArm64Main by getting
         val iosSimulatorArm64Main by getting
         val iosMain by creating {
             dependsOn(commonMain)
+            iosX64Main.dependsOn(this)
             iosArm64Main.dependsOn(this)
             iosSimulatorArm64Main.dependsOn(this)
         }
