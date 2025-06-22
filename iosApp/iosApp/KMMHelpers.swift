@@ -26,10 +26,7 @@ func getPromptViewModel() -> PromptViewModel {
                 imageEncoder: ImageEncoder()
             )
         ),
-        settingsRepository: SettingsRepository(
-            storage: SettingsStorageImpl()
-        ),
-        platform: PlatformImpl()
+        platform: IOSPlatform()
     )
 }
 

@@ -21,10 +21,10 @@ import kotlinx.coroutines.launch
 import org.example.project.screens.ChatViewModel
 import org.example.project.screens.ChatEvent
 import org.example.project.data.model.ChatMessage
-import org.example.project.platform.LocalImage
 import org.koin.compose.koinInject
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.draw.clip
+import org.example.project.platform.LocalImage
 
 @Composable
 fun ChatScreenDesktop(

@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import org.example.project.platform.FilePicker
 import org.koin.core.component.inject
 
 data class PromptState(
@@ -38,7 +37,7 @@ sealed class PromptEffect : UiEffect {
 
 class PromptViewModel(
     private val chatRepository: ChatRepository,
-    private val filePicker: FilePicker
+    private val platform: Platform
 ) : BaseViewModel<PromptState, PromptEvent, PromptEffect>(
     PromptState()
 ) {
@@ -63,7 +62,7 @@ class PromptViewModel(
 
     private fun pickImage() {
         viewModelScope.launch {
-            val imagePath = filePicker.pickImage()
+            val imagePath = platform.pickImage()
             if (imagePath != null) {
                 setState { copy(imagePath = imagePath) }
             }
@@ -71,8 +70,12 @@ class PromptViewModel(
     }
 
     private fun takePhoto() {
-        // For desktop, taking a photo is the same as picking an image
-        pickImage()
+        viewModelScope.launch {
+            val imagePath = platform.takePhoto()
+            if (imagePath != null) {
+                setState { copy(imagePath = imagePath) }
+            }
+        }
     }
 
     private fun clearImage() {
