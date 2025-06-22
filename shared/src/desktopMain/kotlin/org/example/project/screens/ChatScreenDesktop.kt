@@ -21,7 +21,10 @@ import kotlinx.coroutines.launch
 import org.example.project.screens.ChatViewModel
 import org.example.project.screens.ChatEvent
 import org.example.project.data.model.ChatMessage
+import org.example.project.platform.LocalImage
 import org.koin.compose.koinInject
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
 
 @Composable
 fun ChatScreenDesktop(
@@ -300,22 +303,15 @@ fun DesktopMessageCard(
                 )
                 
                 // Image if present
-                message.imagePath?.let { imagePath ->
+                if (message.imagePath != null) {
                     Spacer(modifier = Modifier.height(8.dp))
-                    // TODO: Load and display image
-                    Card(
-                        modifier = Modifier.fillMaxWidth().height(120.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surface
-                        )
-                    ) {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text("Image: $imagePath")
-                        }
-                    }
+                    LocalImage(
+                        path = message.imagePath,
+                        contentDescription = "User selected image",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(8.dp))
+                    )
                 }
                 
                 // Share button for AI responses
