@@ -26,7 +26,8 @@ class LocalizationManager {
         val baseString = Strings.get(key, _currentLanguage.value)
         return if (args.isNotEmpty()) {
             try {
-                String.format(baseString, *args)
+                ""
+                //String.format(baseString, *args)
             } catch (e: Exception) {
                 baseString
             }

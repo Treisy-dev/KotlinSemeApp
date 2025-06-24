@@ -51,4 +51,4 @@ class DesktopShareSheet : ShareSheet {
             false
         }
     }
-} 
+}

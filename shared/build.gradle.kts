@@ -1,6 +1,3 @@
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
@@ -8,6 +5,7 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinx.serialization)
     alias(libs.plugins.kotlinCocoapods)
+    alias(libs.plugins.sqldelight)
 }
 
 kotlin {
@@ -47,6 +45,7 @@ kotlin {
                 implementation(libs.ktor.client.content.negotiation)
                 implementation(libs.ktor.serialization.kotlinx.json)
                 implementation(libs.kotlinx.serialization.json)
+                implementation(dependencies.platform(libs.firebase.bom))
                 // Compose Multiplatform
                 implementation(compose.runtime)
                 implementation(compose.foundation)
@@ -66,6 +65,8 @@ kotlin {
                 implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.5.0")
                 // UUID
                 implementation("com.benasher44:uuid:0.8.2")
+                //Sqldelight
+                implementation(libs.sqldelight.runtime)
             }
         }
         val commonTest by getting {
@@ -75,8 +76,12 @@ kotlin {
         }
         val androidMain by getting {
             dependencies {
-                implementation(libs.koin.android)
                 implementation(libs.ktor.client.cio)
+                implementation(libs.sqldelight.android.driver)
+                implementation(libs.kotlinx.coroutines.core)
+                implementation(libs.firebase.analytics)
+                implementation(libs.androidx.core.ktx)
+                implementation(libs.androidx.activity.ktx)
             }
         }
         val desktopMain by getting {
@@ -96,6 +101,14 @@ kotlin {
             dependencies {
                 implementation(libs.ktor.client.darwin)
             }
+        }
+    }
+}
+
+sqldelight {
+    databases {
+        create("AppDataBase") {
+            packageName.set("org.example.project")
         }
     }
 }

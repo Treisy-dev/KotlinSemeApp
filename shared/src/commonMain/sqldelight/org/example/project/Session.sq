@@ -1,0 +1,23 @@
+CREATE TABLE Session (
+    id TEXT NOT NULL PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    lastMessage TEXT NOT NULL,
+    timestamp INTEGER NOT NULL,
+    hasImage INTEGER NOT NULL
+);
+
+getAll:
+SELECT * FROM Session;
+
+insert:
+INSERT INTO Session VALUES ?;
+
+updateById:
+UPDATE Session SET lastMessage = ?, hasImage = ? WHERE id = ?;
+
+deleteById:
+DELETE FROM Session WHERE id = ?;
+
+deleteAll:
+DELETE FROM Session;
+
