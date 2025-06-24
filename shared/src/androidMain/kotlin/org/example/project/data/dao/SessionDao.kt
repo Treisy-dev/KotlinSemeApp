@@ -1,20 +1,22 @@
-package org.example.project.data.datasource
+package org.example.project.data.dao
 
+import app.cash.sqldelight.coroutines.asFlow
+import app.cash.sqldelight.coroutines.mapToList
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import org.example.project.AppDataBase
 import org.example.project.Session
 
 class SessionDao(
-    private val dataBase: AppDataBase
+    private val dataBase: AppDataBase,
+    private val dispatcher: CoroutineDispatcher
 ) {
 
     fun getAll(): Flow<List<Session>> {
-        return flow {
-            dataBase.sessionQueries
-                .getAll()
-                .executeAsList()
-        }
+        return dataBase.sessionQueries
+            .getAll()
+            .asFlow()
+            .mapToList(dispatcher)
     }
 
     fun insert(session: Session) {

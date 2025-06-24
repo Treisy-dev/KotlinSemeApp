@@ -78,6 +78,7 @@ kotlin {
             dependencies {
                 implementation(libs.ktor.client.cio)
                 implementation(libs.sqldelight.android.driver)
+                implementation(libs.sqldelight.coroutines)
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.firebase.analytics)
                 implementation(libs.androidx.core.ktx)

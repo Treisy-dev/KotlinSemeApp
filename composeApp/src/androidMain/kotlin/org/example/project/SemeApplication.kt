@@ -11,9 +11,12 @@ class SemeApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         FirebaseApp.initializeApp(this@SemeApplication)
-        initKoin(createAndroidAppModule(
-            this@SemeApplication,
-            MainActivity::provideCurrentActivity)
+        initKoin(
+            createAndroidAppModule(
+                context = this@SemeApplication,
+                cameraServiceProvider = MainActivity::provideCameraService,
+                imageServiceProvider = MainActivity::provideImageService
+            )
         )
     }
 }

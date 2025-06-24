@@ -3,15 +3,15 @@ package org.example.project.data.local
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.example.project.Session
-import org.example.project.data.datasource.MessageDao
-import org.example.project.data.datasource.SessionDao
+import org.example.project.data.dao.MessageDao
+import org.example.project.data.dao.SessionDao
 import org.example.project.data.mapper.toChatMessage
 import org.example.project.data.mapper.toChatSession
 import org.example.project.data.mapper.toMessage
 import org.example.project.data.model.ChatMessage
 import org.example.project.data.model.ChatSession
 
-class AndroidDatabase(
+class AndroidChatDatabase(
     private val messageDao: MessageDao,
     private val sessionDao: SessionDao
 ) : ChatDatabase {
@@ -75,6 +75,6 @@ class AndroidDatabase(
 
     override suspend fun clearAll() {
         messageDao.deleteAll()
-        sessionDao.getAll()
+        sessionDao.deleteAll()
     }
 }

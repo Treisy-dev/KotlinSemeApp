@@ -4,38 +4,47 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Chat
-import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.navigator.LocalNavigator
-import cafe.adriel.voyager.navigator.Navigator
-import cafe.adriel.voyager.navigator.currentOrThrow
 import kotlinx.coroutines.launch
 import org.example.project.data.model.ChatMessage
-import org.example.project.screens.HistoryScreenRoute
-import org.example.project.screens.SettingsScreenRoute
-import org.koin.mp.KoinPlatform.getKoin
+import org.koin.compose.koinInject
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
 import org.example.project.platform.LocalImage
+import org.example.project.localization.LocalLocalizationManager
 
 @Composable
 fun ChatScreen(
-    modifier: Modifier = Modifier,
-    viewModel: ChatViewModel,
-    navigator: Navigator
+    viewModel: ChatViewModel = koinInject(),
+    sessionId: String? = null
 ) {
+    val localizationManager = LocalLocalizationManager.current
     val state by viewModel.state.collectAsState()
+    val focusRequester = remember { FocusRequester() }
+    
+    println("ChatScreen: currentMessage changed to: '${state.currentMessage}'")
+    
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
+    
+    // Load session when sessionId changes
+    LaunchedEffect(sessionId) {
+        if (sessionId != null) {
+            viewModel.handleEvent(ChatEvent.LoadSession(sessionId))
+        }
+    }
     
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
@@ -47,10 +56,10 @@ fun ChatScreen(
                     // TODO: Show success toast
                 }
                 is ChatEffect.NavigateToSettings -> {
-                    navigator.push(SettingsScreenRoute())
+                    // Navigation handled by tabs in desktop
                 }
                 is ChatEffect.NavigateToHistory -> {
-                    navigator.push(HistoryScreenRoute())
+                    // Navigation handled by tabs in desktop
                 }
             }
         }
@@ -71,19 +80,13 @@ fun ChatScreen(
         // Header
         Row(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
+            horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(onClick = { navigator.push(HistoryScreenRoute()) }) {
-                Icon(Icons.Default.History, contentDescription = "History")
-            }
             Text(
-                text = "Chat with Gemini",
+                text = localizationManager.getString("nav_chat"),
                 style = MaterialTheme.typography.headlineSmall
             )
-            IconButton(onClick = { navigator.push(SettingsScreenRoute()) }) {
-                Icon(Icons.Default.Settings, contentDescription = "Settings")
-            }
         }
         
         // Messages list
@@ -110,13 +113,13 @@ fun ChatScreen(
                             )
                             Spacer(modifier = Modifier.height(16.dp))
                             Text(
-                                text = "Start a conversation",
+                                text = localizationManager.getString("chat_new_session"),
                                 style = MaterialTheme.typography.titleMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
-                                text = "Ask Gemini anything or share an image for analysis",
+                                text = localizationManager.getString("chat_placeholder"),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 textAlign = TextAlign.Center
@@ -155,7 +158,7 @@ fun ChatScreen(
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
-                                    text = "Gemini is thinking...",
+                                    text = localizationManager.getString("chat_typing"),
                                     style = MaterialTheme.typography.bodyMedium
                                 )
                             }
@@ -176,15 +179,32 @@ fun ChatScreen(
             ) {
                 TextField(
                     value = state.currentMessage,
-                    onValueChange = { viewModel.handleEvent(ChatEvent.UpdateMessage(it)) },
-                    modifier = Modifier.weight(1f),
-                    placeholder = { Text("Type your message...") },
+                    onValueChange = { 
+                        println("TextField onValueChange: '$it'")
+                        viewModel.handleEvent(ChatEvent.UpdateMessage(it)) 
+                    },
+                    modifier = Modifier
+                        .weight(1f)
+                        .focusRequester(focusRequester),
+                    placeholder = { Text(localizationManager.getString("chat_placeholder")) },
                     maxLines = 4,
+                    singleLine = false,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
+                    keyboardActions = KeyboardActions(
+                        onSend = {
+                            if (state.currentMessage.isNotBlank()) {
+                                viewModel.handleEvent(ChatEvent.SendMessage(state.currentMessage))
+                            }
+                        }
+                    ),
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = MaterialTheme.colorScheme.surface,
-                        unfocusedContainerColor = MaterialTheme.colorScheme.surface
+                        unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                        focusedIndicatorColor = MaterialTheme.colorScheme.primary,
+                        unfocusedIndicatorColor = MaterialTheme.colorScheme.outline
                     )
                 )
+                
                 Spacer(modifier = Modifier.width(8.dp))
                 IconButton(
                     onClick = { 
@@ -196,7 +216,7 @@ fun ChatScreen(
                 ) {
                     Icon(
                         Icons.Default.Send,
-                        contentDescription = "Send",
+                        contentDescription = localizationManager.getString("chat_send"),
                         tint = if (state.currentMessage.isNotBlank() && !state.isLoading) 
                             MaterialTheme.colorScheme.primary 
                         else 
@@ -233,7 +253,7 @@ fun ChatScreen(
                     ) {
                         Icon(
                             Icons.Default.Close,
-                            contentDescription = "Clear error",
+                            contentDescription = localizationManager.getString("close"),
                             tint = MaterialTheme.colorScheme.onErrorContainer
                         )
                     }
@@ -248,6 +268,7 @@ fun MessageCard(
     message: ChatMessage,
     onShareClick: () -> Unit
 ) {
+    val localizationManager = LocalLocalizationManager.current
     val alignment = if (message.isUser) Alignment.End else Alignment.Start
     val backgroundColor = if (message.isUser) 
         MaterialTheme.colorScheme.primaryContainer 
@@ -280,43 +301,35 @@ fun MessageCard(
                     Spacer(modifier = Modifier.height(8.dp))
                     LocalImage(
                         path = message.imagePath,
-                        contentDescription = "User selected image",
+                        contentDescription = localizationManager.getString("chat_attach_image"),
                         modifier = Modifier
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(8.dp))
                     )
                 }
                 
-                // Share button for AI responses
-                if (!message.isUser) {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End
+                // Copy button for all messages
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    IconButton(
+                        onClick = onShareClick,
+                        modifier = Modifier.size(24.dp)
                     ) {
-                        IconButton(
-                            onClick = onShareClick,
-                            modifier = Modifier.size(24.dp)
-                        ) {
-                            Icon(
-                                Icons.Default.ContentCopy,
-                                contentDescription = "Copy to clipboard",
-                                modifier = Modifier.size(16.dp),
-                                tint = MaterialTheme.colorScheme.onSecondaryContainer
-                            )
-                        }
+                        Icon(
+                            Icons.Default.ContentCopy,
+                            contentDescription = localizationManager.getString("copy"),
+                            modifier = Modifier.size(16.dp),
+                            tint = if (message.isUser) 
+                                MaterialTheme.colorScheme.onPrimaryContainer 
+                            else 
+                                MaterialTheme.colorScheme.onSecondaryContainer
+                        )
                     }
                 }
             }
         }
-    }
-}
-
-class ChatScreenRoute : Screen {
-    @Composable
-    override fun Content() {
-        val navigator = LocalNavigator.currentOrThrow
-        val viewModel: ChatViewModel = getKoin().get()
-        ChatScreen(viewModel = viewModel, navigator = navigator)
     }
 } 

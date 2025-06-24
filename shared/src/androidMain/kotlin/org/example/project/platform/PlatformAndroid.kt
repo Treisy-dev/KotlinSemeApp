@@ -4,31 +4,30 @@ import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
-import androidx.activity.ComponentActivity
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
-import org.example.project.data.datasource.MessageDao
-import org.example.project.data.datasource.SessionDao
+import org.example.project.data.dao.MessageDao
+import org.example.project.data.dao.SessionDao
 import org.example.project.data.mapper.toMessage
 import org.example.project.data.mapper.toSession
 import org.example.project.data.model.ChatMessage
 import org.example.project.data.model.ChatSession
 import org.example.project.firebase.FirebaseAnalytics
+import org.example.project.platform.contract.CameraService
+import org.example.project.platform.contract.ImageService
+import org.example.project.platform.utils.AndroidFileResolver
 import java.io.File
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 class AndroidPlatform(
     private val context: Context,
-    private val activityProvider: () -> ComponentActivity?,
+    private val cameraServiceProvider: () -> CameraService?,
+    private val imageServiceProvider: () -> ImageService?,
+    private val androidFileResolver: AndroidFileResolver,
     private val messageDao: MessageDao,
     private val sessionDao: SessionDao,
     private val firebaseAnalytics: FirebaseAnalytics
@@ -40,25 +39,12 @@ class AndroidPlatform(
     private val prefs: SharedPreferences
         get() = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 
-    override suspend fun pickImage(): String? = suspendCoroutine { cont ->
-        activityProvider()
-            ?.registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-                cont.resume(uri?.toString())
-            }
-            ?.launch("image/*")
+    override suspend fun pickImage(): String? {
+        return androidFileResolver.getRealPathFromUri(imageServiceProvider()?.chooseImage())
     }
     
-    override suspend fun takePhoto(): String? = suspendCancellableCoroutine { cont ->
-        val imageUri = createImageUri()
-        val launcher = activityProvider()
-            ?.registerForActivityResult(ActivityResultContracts.TakePicture()) { isSuccess ->
-                if (isSuccess) {
-                    cont.resume(imageUri.toString())
-                } else {
-                    cont.resume(null)
-                }
-            }
-            ?.launch(imageUri)
+    override suspend fun takePhoto(): String? {
+        return androidFileResolver.getRealPathFromUri(cameraServiceProvider()?.takePhoto())
     }
     
     override suspend fun shareText(text: String, title: String) {
@@ -156,17 +142,6 @@ class AndroidPlatform(
     
     override fun setLanguage(language: String) {
         setString(KEY_LANGUAGE, language)
-    }
-
-    private fun createImageUri(): Uri {
-        val contentValues = ContentValues().apply {
-            put(MediaStore.Images.Media.DISPLAY_NAME, "photo_${System.currentTimeMillis()}.jpg")
-            put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
-        }
-        return activityProvider()
-            ?.contentResolver
-            ?.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
-            ?: throw IllegalStateException("Failed to create image uri")
     }
 
     private companion object {

@@ -11,25 +11,26 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.navigator.LocalNavigator
-import cafe.adriel.voyager.navigator.Navigator
-import cafe.adriel.voyager.navigator.currentOrThrow
-import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import org.example.project.screens.ChatScreenRoute
-import org.koin.mp.KoinPlatform.getKoin
+import org.koin.compose.koinInject
+import org.example.project.localization.LocalLocalizationManager
 
 @Composable
-fun HistoryScreen(viewModel: HistoryViewModel, navigator: Navigator) {
+fun HistoryScreen(
+    viewModel: HistoryViewModel = koinInject(),
+    onSessionSelected: (String) -> Unit = {}
+) {
     val state by viewModel.state.collectAsState()
+    val localizationManager = LocalLocalizationManager.current
+    
+    println("HistoryScreen: sessions count: ${state.sessions.size}")
     
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             when (effect) {
                 is HistoryEffect.NavigateToChat -> {
-                    navigator.push(ChatScreenRoute())
+                    onSessionSelected(effect.sessionId)
                 }
                 is HistoryEffect.ShowError -> {
                     // TODO: Show error toast
@@ -53,17 +54,14 @@ fun HistoryScreen(viewModel: HistoryViewModel, navigator: Navigator) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(onClick = { navigator.pop() }) {
-                Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-            }
             Text(
-                text = "Chat History",
+                text = localizationManager.getString("history_title"),
                 style = MaterialTheme.typography.headlineSmall
             )
             IconButton(
                 onClick = { viewModel.handleEvent(HistoryEvent.ClearAllHistory) }
             ) {
-                Icon(Icons.Default.Delete, contentDescription = "Clear all")
+                Icon(Icons.Default.Delete, contentDescription = localizationManager.getString("delete"))
             }
         }
         
@@ -75,17 +73,17 @@ fun HistoryScreen(viewModel: HistoryViewModel, navigator: Navigator) {
             FilterChip(
                 selected = state.filterType == FilterType.ALL,
                 onClick = { viewModel.handleEvent(HistoryEvent.SetFilter(FilterType.ALL)) },
-                label = { Text("All") }
+                label = { Text(localizationManager.getString("history_filter_all")) }
             )
             FilterChip(
                 selected = state.filterType == FilterType.TEXT_ONLY,
                 onClick = { viewModel.handleEvent(HistoryEvent.SetFilter(FilterType.TEXT_ONLY)) },
-                label = { Text("Text Only") }
+                label = { Text(localizationManager.getString("history_filter_text")) }
             )
             FilterChip(
                 selected = state.filterType == FilterType.WITH_IMAGE,
                 onClick = { viewModel.handleEvent(HistoryEvent.SetFilter(FilterType.WITH_IMAGE)) },
-                label = { Text("With Image") }
+                label = { Text(localizationManager.getString("history_filter_image")) }
             )
         }
         
@@ -115,13 +113,13 @@ fun HistoryScreen(viewModel: HistoryViewModel, navigator: Navigator) {
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
-                        text = "No chat history",
+                        text = localizationManager.getString("history_empty"),
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "Start a new conversation to see it here",
+                        text = localizationManager.getString("chat_new_session"),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -176,6 +174,7 @@ fun SessionCard(
     onSessionClick: () -> Unit,
     onDeleteClick: () -> Unit
 ) {
+    val localizationManager = LocalLocalizationManager.current
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
@@ -215,7 +214,7 @@ fun SessionCard(
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = formatTimestamp(session.timestamp),
+                    text = session.timestamp.toLocalDateTime(TimeZone.currentSystemDefault()).toString(),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -225,36 +224,10 @@ fun SessionCard(
             IconButton(onClick = onDeleteClick) {
                 Icon(
                     Icons.Default.Delete,
-                    contentDescription = "Delete session",
+                    contentDescription = localizationManager.getString("history_delete"),
                     tint = MaterialTheme.colorScheme.error
                 )
             }
         }
-    }
-}
-
-private fun formatTimestamp(timestamp: kotlinx.datetime.Instant): String {
-    val localDateTime = timestamp.toLocalDateTime(TimeZone.currentSystemDefault())
-    val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
-    
-    return when {
-        localDateTime.date == now.date -> {
-            "${localDateTime.hour.toString().padStart(2, '0')}:${localDateTime.minute.toString().padStart(2, '0')}"
-        }
-        localDateTime.date.year == now.date.year -> {
-            "${localDateTime.monthNumber}/${localDateTime.dayOfMonth}"
-        }
-        else -> {
-            "${localDateTime.year}"
-        }
-    }
-}
-
-class HistoryScreenRoute : Screen {
-    @Composable
-    override fun Content() {
-        val navigator = LocalNavigator.currentOrThrow
-        val viewModel: HistoryViewModel = getKoin().get()
-        HistoryScreen(viewModel = viewModel, navigator = navigator)
     }
 } 

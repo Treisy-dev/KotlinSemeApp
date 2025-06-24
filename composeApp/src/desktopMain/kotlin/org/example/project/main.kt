@@ -34,6 +34,6 @@ fun main() = application {
         state = rememberWindowState()
     ) {
         println("Creating AppDesktop...")
-        AppDesktop()
+        App()
     }
 }
