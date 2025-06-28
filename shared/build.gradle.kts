@@ -29,7 +29,7 @@ kotlin {
         version = "1.0.0"
         summary = "SemeApp Shared"
         homepage = "https://github.com/Semmer-sv/KotlinSemeApp"
-        ios.deploymentTarget = "14.1"
+        ios.deploymentTarget = "16.0"
         framework {
             baseName = "shared"
         }
