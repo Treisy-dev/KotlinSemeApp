@@ -1,51 +1,18 @@
 import shared
 
-// Helper functions to access KMM ViewModels
+// Helper functions to access KMM ViewModels using Koin DI
 func getChatViewModel() -> ChatViewModel {
-    return ChatViewModel(
-        chatRepository: ChatRepository(
-            database: ChatDatabaseImpl(),
-            geminiRepository: GeminiRepository(
-                apiService: GeminiApiService(),
-                imageEncoder: ImageEncoder()
-            )
-        ),
-        settingsRepository: SettingsRepository(
-            storage: SettingsStorageImpl()
-        ),
-        shareSheet: ShareSheetImpl()
-    )
+    return try! ExportedFunctions().createChatViewModel()
 }
 
 func getPromptViewModel() -> PromptViewModel {
-    return PromptViewModel(
-        chatRepository: ChatRepository(
-            database: ChatDatabaseImpl(),
-            geminiRepository: GeminiRepository(
-                apiService: GeminiApiService(),
-                imageEncoder: ImageEncoder()
-            )
-        ),
-        platform: IOSPlatform()
-    )
+    return try! ExportedFunctions().createPromptViewModel()
 }
 
 func getHistoryViewModel() -> HistoryViewModel {
-    return HistoryViewModel(
-        chatRepository: ChatRepository(
-            database: ChatDatabaseImpl(),
-            geminiRepository: GeminiRepository(
-                apiService: GeminiApiService(),
-                imageEncoder: ImageEncoder()
-            )
-        )
-    )
+    return try! ExportedFunctions().createHistoryViewModel()
 }
 
 func getSettingsViewModel() -> SettingsViewModel {
-    return SettingsViewModel(
-        settingsRepository: SettingsRepository(
-            storage: SettingsStorageImpl()
-        )
-    )
+    return try! ExportedFunctions().createSettingsViewModel()
 } 

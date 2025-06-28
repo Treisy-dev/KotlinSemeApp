@@ -55,8 +55,8 @@ val sharedModule: Module = module {
     single { GeminiRepository(get(), get()) }
     
     // ViewModels
-    factory { ChatViewModel(get(), get(), get()) }
-    factory { SettingsViewModel(get()) }
-    factory { PromptViewModel(get(), get()) }
-    factory { HistoryViewModel(get()) }
+    single { ChatViewModel(get(), get(), get()) }
+    single { SettingsViewModel(get()) }
+    single { PromptViewModel(get(), get()) }
+    single { HistoryViewModel(get()) }
 } 

@@ -5,16 +5,19 @@ import org.example.project.screens.SettingsViewModel
 import org.example.project.screens.PromptViewModel
 import org.example.project.screens.HistoryViewModel
 import org.koin.mp.KoinPlatform
+import kotlinx.cinterop.ExperimentalForeignApi
 
-// Экспортируемые функции для Swift/ObjC
-@kotlin.jvm.JvmName("GetChatViewModel")
-fun GetChatViewModel(): ChatViewModel = KoinPlatform.getKoin().get()
+@OptIn(ExperimentalForeignApi::class)
+object ExportedFunctions {
+    @Throws(Exception::class)
+    fun createChatViewModel(): ChatViewModel = KoinPlatform.getKoin().get()
 
-@kotlin.jvm.JvmName("GetPromptViewModel")
-fun GetPromptViewModel(): PromptViewModel = KoinPlatform.getKoin().get()
+    @Throws(Exception::class)
+    fun createPromptViewModel(): PromptViewModel = KoinPlatform.getKoin().get()
 
-@kotlin.jvm.JvmName("GetHistoryViewModel")
-fun GetHistoryViewModel(): HistoryViewModel = KoinPlatform.getKoin().get()
+    @Throws(Exception::class)
+    fun createHistoryViewModel(): HistoryViewModel = KoinPlatform.getKoin().get()
 
-@kotlin.jvm.JvmName("GetSettingsViewModel")
-fun GetSettingsViewModel(): SettingsViewModel = KoinPlatform.getKoin().get() 
+    @Throws(Exception::class)
+    fun createSettingsViewModel(): SettingsViewModel = KoinPlatform.getKoin().get()
+} 

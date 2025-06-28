@@ -14,7 +14,9 @@ class ChatViewModelWrapper: ObservableObject {
     @Published var currentMessage: String = ""
     
     init() {
+        print("🔧 Creating ChatViewModelWrapper...")
         kmmViewModel = getChatViewModel()
+        print("✅ ChatViewModel created successfully")
         observeState()
     }
     
@@ -73,7 +75,9 @@ class PromptViewModelWrapper: ObservableObject {
     @Published var error: String? = nil
     
     init() {
+        print("🔧 Creating PromptViewModelWrapper...")
         kmmViewModel = getPromptViewModel()
+        print("✅ PromptViewModel created successfully")
         observeState()
     }
     
@@ -140,7 +144,9 @@ class HistoryViewModelWrapper: ObservableObject {
     @Published var filterType: FilterType = .all
     
     init() {
+        print("🔧 Creating HistoryViewModelWrapper...")
         kmmViewModel = getHistoryViewModel()
+        print("✅ HistoryViewModel created successfully")
         observeState()
     }
     
@@ -218,7 +224,9 @@ class SettingsViewModelWrapper: ObservableObject {
     @Published var buildNumber: String = "1"
     
     init() {
+        print("🔧 Creating SettingsViewModelWrapper...")
         kmmViewModel = getSettingsViewModel()
+        print("✅ SettingsViewModel created successfully")
         observeState()
     }
     
