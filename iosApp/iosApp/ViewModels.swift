@@ -11,7 +11,6 @@ class ChatViewModelWrapper: ObservableObject {
     @Published var messages: [ChatMessage] = []
     @Published var isLoading: Bool = false
     @Published var error: String? = nil
-    @Published var currentMessage: String = ""
     
     init() {
         print("🔧 Creating ChatViewModelWrapper...")
@@ -37,12 +36,10 @@ class ChatViewModelWrapper: ObservableObject {
                         context: "chat_view_model",
                         additionalInfo: [
                             "messages_count": state.messages.count,
-                            "is_loading": state.isLoading
+                            "session_id": state.sessionId ?? "none"
                         ]
                     )
                 }
-                
-                self.currentMessage = state.currentMessage
             }
         }
     }
@@ -51,15 +48,69 @@ class ChatViewModelWrapper: ObservableObject {
         timer?.invalidate()
     }
     
-    func sendMessage(_ text: String) {
-        kmmViewModel.handleEvent(event: ChatEvent.UpdateMessage(text: text))
-        kmmViewModel.handleEvent(event: ChatEvent.SendMessage(content: text))
+    func loadMessages() {
+        kmmViewModel.handleEvent(event: ChatEvent.LoadSession(sessionId: ""))
     }
     
-    func loadMessages(sessionId: String? = nil) {
-        if let sessionId = sessionId {
-            kmmViewModel.handleEvent(event: ChatEvent.LoadSession(sessionId: sessionId))
+    func sendMessage(_ text: String) {
+        kmmViewModel.handleEvent(event: ChatEvent.SendMessage(content: text))
+    }
+}
+
+// MARK: - ChatDetailViewModelWrapper
+class ChatDetailViewModelWrapper: ObservableObject {
+    private let kmmViewModel: ChatViewModel
+    private var cancellables = Set<AnyCancellable>()
+    private var timer: Timer?
+    
+    @Published var messages: [ChatMessage] = []
+    @Published var isLoading: Bool = false
+    @Published var error: String? = nil
+    
+    init() {
+        print("🔧 Creating ChatDetailViewModelWrapper...")
+        kmmViewModel = getChatViewModel()
+        print("✅ ChatDetailViewModel created successfully")
+        observeState()
+    }
+    
+    private func observeState() {
+        // Use a timer to periodically check the state
+        timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
+            guard let self = self else { return }
+            guard let state = self.kmmViewModel.state.value as? ChatState else { return }
+            DispatchQueue.main.async {
+                self.messages = state.messages
+                self.isLoading = state.isLoading
+                
+                // Handle error logging
+                if let error = state.error, error != self.error {
+                    self.error = error
+                    ErrorHandler.shared.logCustomError(
+                        message: error,
+                        context: "chat_detail_view_model",
+                        additionalInfo: [
+                            "messages_count": state.messages.count,
+                            "session_id": state.sessionId ?? "none"
+                        ]
+                    )
+                }
+            }
         }
+    }
+    
+    deinit {
+        timer?.invalidate()
+    }
+    
+    func loadMessages(sessionId: String) {
+        kmmViewModel.handleEvent(event: ChatEvent.LoadSession(sessionId: sessionId))
+    }
+    
+    func deleteSession(sessionId: String) {
+        // This will be handled by the history view model
+        // We just need to trigger the deletion
+        print("Deleting session: \(sessionId)")
     }
 }
 
@@ -70,7 +121,7 @@ class PromptViewModelWrapper: ObservableObject {
     private var timer: Timer?
     
     @Published var prompt: String = ""
-    @Published var imagePath: String? = nil
+    @Published var selectedImagePath: String? = nil
     @Published var isLoading: Bool = false
     @Published var error: String? = nil
     
@@ -88,7 +139,7 @@ class PromptViewModelWrapper: ObservableObject {
             guard let state = self.kmmViewModel.state.value as? PromptState else { return }
             DispatchQueue.main.async {
                 self.prompt = state.prompt
-                self.imagePath = state.imagePath
+                self.selectedImagePath = state.imagePath
                 self.isLoading = state.isLoading
                 
                 // Handle error logging
@@ -98,8 +149,8 @@ class PromptViewModelWrapper: ObservableObject {
                         message: error,
                         context: "prompt_view_model",
                         additionalInfo: [
-                            "has_image": state.imagePath != nil,
-                            "is_loading": state.isLoading
+                            "prompt_length": state.prompt.count,
+                            "has_image": state.imagePath != nil
                         ]
                     )
                 }

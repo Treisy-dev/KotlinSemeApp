@@ -26,7 +26,7 @@ struct ChatView: View {
                                         .font(.title2)
                                         .fontWeight(.medium)
                                     
-                                    Text("Ask Gemini anything or share an image for analysis")
+                                    Text(localizationManager.getString("chat_subtitle"))
                                         .font(.body)
                                         .foregroundColor(.secondary)
                                         .multilineTextAlignment(.center)
@@ -96,11 +96,6 @@ struct ChatView: View {
                     }
                 }
                 
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: { showingSettings = true }) {
-                        Image(systemName: "gear")
-                    }
-                }
             }
             .sheet(isPresented: $showingHistory) {
                 HistoryView()

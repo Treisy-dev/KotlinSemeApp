@@ -5,6 +5,7 @@ struct HistoryView: View {
     @StateObject private var viewModel = HistoryViewModelWrapper()
     @StateObject private var localizationManager = LocalizationManager.shared
     @State private var selectedFilter: FilterType = .all
+    @State private var selectedSession: ChatSession? = nil
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
@@ -51,7 +52,7 @@ struct HistoryView: View {
                             .font(.title2)
                             .fontWeight(.medium)
                         
-                        Text("Start a new conversation to see it here")
+                        Text(localizationManager.getString("history_subtitle"))
                             .font(.body)
                             .foregroundColor(.secondary)
                             .multilineTextAlignment(.center)
@@ -60,11 +61,27 @@ struct HistoryView: View {
                 } else {
                     List {
                         ForEach(viewModel.sessions, id: \.id) { session in
-                            SessionRow(session: session) {
-                                viewModel.openSession(session.id)
-                            } onDelete: {
-                                viewModel.deleteSession(session.id)
+                            HStack {
+                                
+                                SessionRow(session: session) {
+                                    selectedSession = session
+                                } onDelete: {
+                                    viewModel.deleteSession(session.id)
+                                }
+                                .swipeActions {
+                                    Button{
+                                        viewModel.deleteSession(session.id)
+                                    } label: {
+                                      Image(systemName: "trash")
+                                        .font(.headline)
+                                        .foregroundColor(.red)
+                                        .frame(width: 40, height: 40)
+                                    }
+                                }
+                                Spacer()
+
                             }
+
                         }
                     }
                     .listStyle(PlainListStyle())
@@ -73,11 +90,6 @@ struct HistoryView: View {
             .navigationTitle(localizationManager.getString("history_title"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button(localizationManager.getString("done")) {
-                        dismiss()
-                    }
-                }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: { viewModel.clearAllHistory() }) {
@@ -85,6 +97,9 @@ struct HistoryView: View {
                     }
                 }
             }
+        }
+        .fullScreenCover(item: $selectedSession) { session in
+            ChatDetailView(session: session)
         }
         .onAppear {
             viewModel.loadSessions()
@@ -112,50 +127,40 @@ struct FilterChip: View {
 }
 
 struct SessionRow: View {
-    let session: ChatSession
-    let onTap: () -> Void
-    let onDelete: () -> Void
-    
-    var body: some View {
+  let session: ChatSession
+  let onTap: () -> Void
+  let onDelete: () -> Void
+
+  var body: some View {
+    HStack {
+      // Первая кнопка: без Spacer внутри
+      Button(action: onTap) {
         HStack {
-            // Icon
-            Image(systemName: session.hasImage ? "photo" : "message")
-                .font(.title2)
-                .foregroundColor(.blue)
-                .frame(width: 24, height: 24)
-            
-            // Content
-            VStack(alignment: .leading, spacing: 4) {
-                Text(session.title)
-                    .font(.body)
-                    .fontWeight(.medium)
-                    .lineLimit(1)
-                
-                Text(session.lastMessage)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                    .lineLimit(2)
-                
-                Text(formatTimestamp(session.timestamp))
-                    .font(.caption2)
-                    .foregroundColor(.secondary)
-            }
-            
-            Spacer()
-            
-            // Delete button
-            Button(action: onDelete) {
-                Image(systemName: "trash")
-                    .foregroundColor(.red)
-            }
+          Image(systemName: session.hasImage ? "photo" : "message")
+            .font(.title2)
+            .foregroundColor(.blue)
+            .frame(width: 24, height: 24)
+
+          VStack(alignment: .leading, spacing: 4) {
+            Text(session.title).lineLimit(1).fontWeight(.medium)
+            Text(session.lastMessage).lineLimit(2).font(.caption).foregroundColor(.secondary)
+            Text(formatTimestamp(session.timestamp))
+              .font(.caption2)
+              .foregroundColor(.secondary)
+          }
         }
-        .padding(.vertical, 8)
-        .contentShape(Rectangle())
-        .onTapGesture {
-            onTap()
-        }
+      }
+      // Теперь Spacer — между кнопками, а не внутри лейбла
+      Spacer()
+      // Вторая кнопка остаётся на своём месте
+
     }
+    .padding(.vertical, 8)
+  }
 }
+
+// Extension to make ChatSession identifiable for sheet presentation
+extension ChatSession: Identifiable {}
 
 #Preview {
     HistoryView()

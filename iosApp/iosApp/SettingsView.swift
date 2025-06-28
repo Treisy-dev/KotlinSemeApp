@@ -23,7 +23,7 @@ struct SettingsView: View {
                                     VStack(alignment: .leading) {
                                         Text(localizationManager.getString("theme_dark"))
                                             .font(.body)
-                                        Text("Use dark theme")
+                                        Text(localizationManager.getString("theme_dark_description"))
                                             .font(.caption)
                                             .foregroundColor(.secondary)
                                     }
@@ -42,7 +42,7 @@ struct SettingsView: View {
                             
                             // Theme Mode Selection
                             VStack(alignment: .leading, spacing: 8) {
-                                Text("Theme Mode")
+                                Text(localizationManager.getString("theme_mode"))
                                     .font(.body)
                                 
                                 HStack(spacing: 8) {
@@ -72,6 +72,7 @@ struct SettingsView: View {
                                             FirebaseAnalyticsManager.shared.trackSettingsChanged(settingName: "theme_mode", newValue: "system")
                                         }
                                     )
+                                    Spacer()
                                 }
                             }
                         }
@@ -97,6 +98,8 @@ struct SettingsView: View {
                                     FirebaseAnalyticsManager.shared.trackSettingsChanged(settingName: "language", newValue: "ru")
                                 }
                             )
+                            
+                            Spacer()
                         }
                     }
                     
@@ -118,22 +121,6 @@ struct SettingsView: View {
                                 .background(Color(.systemRed).opacity(0.1))
                                 .cornerRadius(10)
                             }
-                            
-                            Button(action: { 
-                                viewModel.exportData()
-                                FirebaseAnalyticsManager.shared.trackCustomEvent(name: "data_exported")
-                            }) {
-                                HStack {
-                                    Image(systemName: "square.and.arrow.up")
-                                        .foregroundColor(.blue)
-                                    Text(localizationManager.getString("share"))
-                                        .foregroundColor(.blue)
-                                    Spacer()
-                                }
-                                .padding()
-                                .background(Color(.systemBlue).opacity(0.1))
-                                .cornerRadius(10)
-                            }
                         }
                     }
                     
@@ -150,7 +137,7 @@ struct SettingsView: View {
                             Divider()
                             
                             HStack {
-                                Text("Build")
+                                Text(localizationManager.getString("build"))
                                 Spacer()
                                 Text(viewModel.buildNumber)
                                     .foregroundColor(.secondary)
@@ -163,7 +150,7 @@ struct SettingsView: View {
                                 FirebaseAnalyticsManager.shared.trackCustomEvent(name: "privacy_policy_opened")
                             }) {
                                 HStack {
-                                    Text("Privacy Policy")
+                                    Text(localizationManager.getString("privacy_policy"))
                                     Spacer()
                                     Image(systemName: "arrow.up.right.square")
                                 }
@@ -177,7 +164,7 @@ struct SettingsView: View {
                                 FirebaseAnalyticsManager.shared.trackCustomEvent(name: "terms_of_service_opened")
                             }) {
                                 HStack {
-                                    Text("Terms of Service")
+                                    Text(localizationManager.getString("terms_of_service"))
                                     Spacer()
                                     Image(systemName: "arrow.up.right.square")
                                 }
@@ -190,13 +177,6 @@ struct SettingsView: View {
             }
             .navigationTitle(localizationManager.getString("settings_title"))
             .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button(localizationManager.getString("done")) {
-                        dismiss()
-                    }
-                }
-            }
         }
         .onAppear {
             viewModel.loadSettings()

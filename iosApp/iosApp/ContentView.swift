@@ -19,7 +19,7 @@ struct ContentView: View {
             ChatView()
                 .tabItem {
                     Image(systemName: "message.fill")
-                    Text(localizationManager.getString("nav_chat"))
+                    Text(localizationManager.getString("chat"))
                 }
                 .tag(0)
             
@@ -27,7 +27,7 @@ struct ContentView: View {
             HistoryView()
                 .tabItem {
                     Image(systemName: "clock.fill")
-                    Text(localizationManager.getString("nav_history"))
+                    Text(localizationManager.getString("history"))
                 }
                 .tag(1)
             
@@ -35,7 +35,7 @@ struct ContentView: View {
             PromptView()
                 .tabItem {
                     Image(systemName: "plus.circle.fill")
-                    Text(localizationManager.getString("nav_prompts"))
+                    Text(localizationManager.getString("prompts"))
                 }
                 .tag(2)
             
@@ -43,7 +43,7 @@ struct ContentView: View {
             SettingsView()
                 .tabItem {
                     Image(systemName: "gear")
-                    Text(localizationManager.getString("nav_settings"))
+                    Text(localizationManager.getString("settings"))
                 }
                 .tag(3)
         }

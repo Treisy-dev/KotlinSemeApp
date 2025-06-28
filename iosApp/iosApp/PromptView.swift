@@ -16,7 +16,7 @@ struct PromptView: View {
                 VStack(spacing: 20) {
                     // Image Selection Card
                     VStack(alignment: .leading, spacing: 16) {
-                        Text("Add Image (Optional)")
+                        Text(localizationManager.getString("prompt_add_image"))
                             .font(.title2)
                             .fontWeight(.medium)
 
@@ -24,7 +24,7 @@ struct PromptView: View {
                             Button(action: { showingImagePicker = true }) {
                                 HStack {
                                     Image(systemName: "photo")
-                                    Text("Gallery")
+                                    Text(localizationManager.getString("prompt_gallery"))
                                 }
                                 .frame(maxWidth: .infinity)
                                 .padding()
@@ -36,7 +36,7 @@ struct PromptView: View {
                             Button(action: { showingCamera = true }) {
                                 HStack {
                                     Image(systemName: "camera")
-                                    Text("Camera")
+                                    Text(localizationManager.getString("prompt_camera"))
                                 }
                                 .frame(maxWidth: .infinity)
                                 .padding()
@@ -58,7 +58,7 @@ struct PromptView: View {
                                 Button(action: { selectedImage = nil; imagePath = nil }) {
                                     HStack {
                                         Image(systemName: "xmark.circle.fill")
-                                        Text("Remove Image")
+                                        Text(localizationManager.getString("prompt_remove_image"))
                                     }
                                     .foregroundColor(.red)
                                 }

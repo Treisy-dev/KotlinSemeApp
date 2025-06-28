@@ -41,6 +41,56 @@ class LocalizationManager: ObservableObject {
 struct Strings {
     private static let strings: [String: [String: String]] = [
         "en": [
+            // Tab Bar
+            "chat": "Chat",
+            "history": "History",
+            "prompts": "Prompts",
+            "settings": "Settings",
+            
+            // Chat Screen
+            "chat_title": "Chat",
+            "chat_new_session": "New Chat",
+            "chat_placeholder": "Type a message...",
+            "chat_send": "Send",
+            "chat_loading": "Sending...",
+            "chat_error": "Send Error",
+            "chat_attach_image": "Attach Image",
+            "chat_take_photo": "Take Photo",
+            "chat_typing": "AI is typing...",
+            "chat_retry": "Retry",
+            "chat_copy_message": "Copy message",
+            "chat_message_copied": "Message copied to clipboard",
+            "chat_copy_failed": "Failed to copy message",
+            "chat_subtitle": "Ask Gemini anything or share an image for analysis",
+            
+            // History Screen
+            "history_title": "History",
+            "history_empty": "History is empty",
+            "history_subtitle": "Start a new conversation to see it here",
+            "history_filter_all": "All",
+            "history_filter_text": "Text only",
+            "history_filter_image": "With images",
+            "history_delete": "Delete",
+            "history_share": "Share",
+            "history_copy": "Copy",
+            "history_no_messages": "No messages in this conversation",
+            
+            // Prompt Screen
+            "prompt_title": "New Prompt",
+            "prompt_placeholder": "Describe what you want...",
+            "prompt_send": "Send",
+            "prompt_loading": "Sending...",
+            "prompt_error": "Send Error",
+            "prompt_clear": "Clear",
+            "prompt_examples": "Example Prompts",
+            "prompt_example_1": "Write a story about...",
+            "prompt_example_2": "Explain how to...",
+            "prompt_example_3": "Create a poem about...",
+            "prompt_add_image": "Add Image (Optional)",
+            "prompt_gallery": "Gallery",
+            "prompt_camera": "Camera",
+            "prompt_remove_image": "Remove Image",
+            
             // Settings Screen
             "settings_title": "Settings",
             "settings_theme": "Theme",
@@ -50,51 +100,18 @@ struct Strings {
             "theme_light": "Light",
             "theme_dark": "Dark",
             "theme_system": "System",
+            "theme_mode": "Theme Mode",
+            "theme_dark_description": "Use dark theme",
             "language_english": "English",
-            "language_russian": "Русский",
+            "language_russian": "Russian",
             "clear_all_data": "Clear All Data",
             "clear_all_data_description": "This will delete all chat history and settings",
             "app_name_full": "SemeApp - AI Chat",
             "app_version": "Version 1.0.0",
             "powered_by": "Powered by Google Gemini AI",
-            
-            // Navigation
-            "nav_chat": "Chat",
-            "nav_history": "History",
-            "nav_prompts": "Prompts",
-            "nav_settings": "Settings",
-            
-            // Chat Screen
-            "chat_placeholder": "Type your message...",
-            "chat_send": "Send",
-            "chat_attach_image": "Attach Image",
-            "chat_take_photo": "Take Photo",
-            "chat_typing": "AI is typing...",
-            "chat_error": "Error sending message",
-            "chat_retry": "Retry",
-            "chat_new_session": "New Chat",
-            "chat_copy_message": "Copy message",
-            "chat_message_copied": "Message copied to clipboard",
-            "chat_copy_failed": "Failed to copy message",
-            
-            // History Screen
-            "history_title": "Chat History",
-            "history_empty": "No chat history yet",
-            "history_filter_all": "All",
-            "history_filter_text": "Text Only",
-            "history_filter_image": "With Image",
-            "history_delete": "Delete",
-            "history_share": "Share",
-            
-            // Prompt Screen
-            "prompt_title": "Prompts",
-            "prompt_placeholder": "Enter your prompt...",
-            "prompt_send": "Send Prompt",
-            "prompt_clear": "Clear",
-            "prompt_examples": "Example Prompts",
-            "prompt_example_1": "Write a story about...",
-            "prompt_example_2": "Explain how to...",
-            "prompt_example_3": "Create a poem about...",
+            "build": "Build",
+            "privacy_policy": "Privacy Policy",
+            "terms_of_service": "Terms of Service",
             
             // Common
             "error": "Error",
@@ -119,6 +136,56 @@ struct Strings {
             "continue": "Continue"
         ],
         "ru": [
+            // Tab Bar
+            "chat": "Чат",
+            "history": "История",
+            "prompts": "Промпты",
+            "settings": "Настройки",
+            
+            // Chat Screen
+            "chat_title": "Чат",
+            "chat_new_session": "Новый чат",
+            "chat_placeholder": "Введите сообщение...",
+            "chat_send": "Отправить",
+            "chat_loading": "Отправка...",
+            "chat_error": "Ошибка отправки",
+            "chat_attach_image": "Прикрепить изображение",
+            "chat_take_photo": "Сделать фото",
+            "chat_typing": "AI печатает...",
+            "chat_retry": "Повторить",
+            "chat_copy_message": "Копировать сообщение",
+            "chat_message_copied": "Сообщение скопировано в буфер обмена",
+            "chat_copy_failed": "Не удалось скопировать сообщение",
+            "chat_subtitle": "Спросите Gemini что угодно или поделитесь изображением для анализа",
+            
+            // History Screen
+            "history_title": "История",
+            "history_empty": "История пуста",
+            "history_subtitle": "Начните новый разговор, чтобы увидеть его здесь",
+            "history_filter_all": "Все",
+            "history_filter_text": "Только текст",
+            "history_filter_image": "С изображениями",
+            "history_delete": "Удалить",
+            "history_share": "Поделиться",
+            "history_copy": "Копировать",
+            "history_no_messages": "В этом разговоре нет сообщений",
+            
+            // Prompt Screen
+            "prompt_title": "Новый запрос",
+            "prompt_placeholder": "Опишите, что вы хотите...",
+            "prompt_send": "Отправить",
+            "prompt_loading": "Отправка...",
+            "prompt_error": "Ошибка отправки",
+            "prompt_clear": "Очистить",
+            "prompt_examples": "Примеры промптов",
+            "prompt_example_1": "Напиши историю о...",
+            "prompt_example_2": "Объясни как...",
+            "prompt_example_3": "Создай стихотворение о...",
+            "prompt_add_image": "Добавить изображение (необязательно)",
+            "prompt_gallery": "Галерея",
+            "prompt_camera": "Камера",
+            "prompt_remove_image": "Удалить изображение",
+            
             // Settings Screen
             "settings_title": "Настройки",
             "settings_theme": "Тема",
@@ -128,6 +195,8 @@ struct Strings {
             "theme_light": "Светлая",
             "theme_dark": "Тёмная",
             "theme_system": "Системная",
+            "theme_mode": "Режим темы",
+            "theme_dark_description": "Использовать тёмную тему",
             "language_english": "English",
             "language_russian": "Русский",
             "clear_all_data": "Очистить все данные",
@@ -135,44 +204,9 @@ struct Strings {
             "app_name_full": "SemeApp - AI Чат",
             "app_version": "Версия 1.0.0",
             "powered_by": "Работает на Google Gemini AI",
-            
-            // Navigation
-            "nav_chat": "Чат",
-            "nav_history": "История",
-            "nav_prompts": "Промпты",
-            "nav_settings": "Настройки",
-            
-            // Chat Screen
-            "chat_placeholder": "Введите сообщение...",
-            "chat_send": "Отправить",
-            "chat_attach_image": "Прикрепить изображение",
-            "chat_take_photo": "Сделать фото",
-            "chat_typing": "AI печатает...",
-            "chat_error": "Ошибка отправки сообщения",
-            "chat_retry": "Повторить",
-            "chat_new_session": "Новый чат",
-            "chat_copy_message": "Копировать сообщение",
-            "chat_message_copied": "Сообщение скопировано в буфер обмена",
-            "chat_copy_failed": "Не удалось скопировать сообщение",
-            
-            // History Screen
-            "history_title": "История чатов",
-            "history_empty": "История чатов пуста",
-            "history_filter_all": "Все",
-            "history_filter_text": "Только текст",
-            "history_filter_image": "С изображениями",
-            "history_delete": "Удалить",
-            "history_share": "Поделиться",
-            
-            // Prompt Screen
-            "prompt_title": "Промпты",
-            "prompt_placeholder": "Введите промпт...",
-            "prompt_send": "Отправить промпт",
-            "prompt_clear": "Очистить",
-            "prompt_examples": "Примеры промптов",
-            "prompt_example_1": "Напиши историю о...",
-            "prompt_example_2": "Объясни как...",
-            "prompt_example_3": "Создай стихотворение о...",
+            "build": "Сборка",
+            "privacy_policy": "Политика конфиденциальности",
+            "terms_of_service": "Условия использования",
             
             // Common
             "error": "Ошибка",

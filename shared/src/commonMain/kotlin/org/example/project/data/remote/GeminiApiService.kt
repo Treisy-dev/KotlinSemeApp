@@ -84,6 +84,11 @@ class GeminiApiService {
     
     suspend fun generateTextWithImage(prompt: String, imageBase64: String): Result<String> {
         return try {
+            println("🔍 GeminiApiService: Starting generateTextWithImage")
+            println("🔍 GeminiApiService: Prompt length: ${prompt.length}")
+            println("🔍 GeminiApiService: Image base64 length: ${imageBase64.length}")
+            println("🔍 GeminiApiService: Image base64 preview: ${imageBase64.take(50)}...")
+            
             val request = GeminiRequest(
                 contents = listOf(
                     GeminiRequest.Content(
@@ -91,7 +96,7 @@ class GeminiApiService {
                             GeminiRequest.Part(text = prompt),
                             GeminiRequest.Part(
                                 inlineData = GeminiRequest.Part.InlineData(
-                                    mimeType = "image/jpeg",
+                                    mimeType = "image/png",
                                     data = imageBase64
                                 )
                             )
@@ -100,13 +105,18 @@ class GeminiApiService {
                 )
             )
             
+            println("🔍 GeminiApiService: Request created, sending to API...")
+            
             val response = performRequest<GeminiResponse>(
                 endpoint = "${GeminiConfig.MODEL_NAME}:generateContent",
                 request = request
             )
             
+            println("🔍 GeminiApiService: Response received")
+            
             when {
                 response.error != null -> {
+                    println("❌ GeminiApiService: API Error: ${response.error.message}")
                     if (response.error.code in listOf(401, 403) && nextKey()) {
                         generateTextWithImage(prompt, imageBase64)
                     } else {
@@ -116,14 +126,21 @@ class GeminiApiService {
                 response.candidates?.isNotEmpty() == true -> {
                     val text = response.candidates.first().content.parts.firstOrNull()?.text
                     if (text != null) {
+                        println("✅ GeminiApiService: Successfully extracted text from response")
                         Result.success(text)
                     } else {
+                        println("❌ GeminiApiService: No text in response")
                         Result.failure(Exception("No text in response"))
                     }
                 }
-                else -> Result.failure(Exception("No candidates in response"))
+                else -> {
+                    println("❌ GeminiApiService: No candidates in response")
+                    Result.failure(Exception("No candidates in response"))
+                }
             }
         } catch (e: Exception) {
+            println("❌ GeminiApiService: Exception occurred: ${e.message}")
+            e.printStackTrace()
             Result.failure(e)
         }
     }
