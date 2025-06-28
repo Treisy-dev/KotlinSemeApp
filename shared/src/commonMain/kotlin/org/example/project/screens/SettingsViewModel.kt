@@ -1,6 +1,9 @@
 package org.example.project.screens
 
 import org.example.project.data.repository.SettingsRepository
+import org.example.project.localization.LocalizationManagerProvider
+import org.example.project.platform.getPlatform
+import org.example.project.ui.design.ThemeManagerProvider
 import org.example.project.mvi.BaseViewModel
 import org.example.project.mvi.UiState
 import org.example.project.mvi.UiEvent
@@ -9,6 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.first
 
 data class SettingsState(
     val isDarkMode: Boolean = false,
@@ -37,6 +41,10 @@ class SettingsViewModel(
     private val settingsRepository: SettingsRepository
 ) : BaseViewModel<SettingsState, SettingsEvent, SettingsEffect>(SettingsState()) {
 
+    private val localizationManager = LocalizationManagerProvider.getInstance()
+    private val themeManager = ThemeManagerProvider.getInstance()
+    private val platform = getPlatform()
+
     init {
         handleEvent(SettingsEvent.LoadSettings)
     }
@@ -47,6 +55,7 @@ class SettingsViewModel(
                 viewModelScope.launch {
                     try {
                         settingsRepository.setDarkMode(event.enabled)
+                        themeManager.setDarkMode(event.enabled)
                         setState { copy(isDarkMode = event.enabled) }
                         setEffect { SettingsEffect.ShowSuccess("Theme updated") }
                     } catch (e: Exception) {
@@ -58,6 +67,7 @@ class SettingsViewModel(
                 viewModelScope.launch {
                     try {
                         settingsRepository.setThemeMode(event.mode)
+                        themeManager.setThemeMode(event.mode)
                         setState { copy(themeMode = event.mode) }
                         setEffect { SettingsEffect.ShowSuccess("Theme mode updated") }
                     } catch (e: Exception) {
@@ -69,6 +79,7 @@ class SettingsViewModel(
                 viewModelScope.launch {
                     try {
                         settingsRepository.setLanguage(event.language)
+                        localizationManager.setLanguage(event.language)
                         setState { copy(language = event.language) }
                         setEffect { SettingsEffect.ShowSuccess("Language updated") }
                     } catch (e: Exception) {
@@ -81,17 +92,24 @@ class SettingsViewModel(
                     setState { copy(isLoading = true, error = null) }
                     
                     try {
-                        settingsRepository.isDarkMode().collect { isDark ->
-                            setState { copy(isDarkMode = isDark) }
+                        // Загружаем настройки из хранилища
+                        val storedLanguage = settingsRepository.getLanguage().first()
+                        val storedThemeMode = settingsRepository.getThemeMode().first()
+                        val storedDarkMode = settingsRepository.isDarkMode().first()
+                        
+                        // Обновляем состояние
+                        setState { 
+                            copy(
+                                language = storedLanguage,
+                                themeMode = storedThemeMode,
+                                isDarkMode = storedDarkMode
+                            ) 
                         }
                         
-                        settingsRepository.getThemeMode().collect { themeMode ->
-                            setState { copy(themeMode = themeMode) }
-                        }
+                        // Синхронизируем с платформой, LocalizationManager и ThemeManager
+                        platform.setLanguage(storedLanguage)
+                        localizationManager.syncLanguage(storedLanguage)
                         
-                        settingsRepository.getLanguage().collect { language ->
-                            setState { copy(language = language) }
-                        }
                     } catch (e: Exception) {
                         setState { copy(error = "Failed to load settings: ${e.message}") }
                     } finally {

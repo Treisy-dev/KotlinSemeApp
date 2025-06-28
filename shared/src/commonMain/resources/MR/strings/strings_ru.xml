@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Settings Screen -->
+    <string name="settings_title">Настройки</string>
+    <string name="settings_theme">Тема</string>
+    <string name="settings_language">Язык</string>
+    <string name="settings_data_management">Управление данными</string>
+    <string name="settings_about">О приложении</string>
+    
+    <!-- Theme Options -->
+    <string name="theme_light">Светлая</string>
+    <string name="theme_dark">Тёмная</string>
+    <string name="theme_system">Системная</string>
+    
+    <!-- Language Options -->
+    <string name="language_english">English</string>
+    <string name="language_russian">Русский</string>
+    
+    <!-- Data Management -->
+    <string name="clear_all_data">Очистить все данные</string>
+    <string name="clear_all_data_description">Это удалит всю историю чатов и настройки</string>
+    
+    <!-- About Section -->
+    <string name="app_name_full">SemeApp - AI Чат</string>
+    <string name="app_version">Версия 1.0.0</string>
+    <string name="powered_by">Работает на Google Gemini AI</string>
+    
+    <!-- Common -->
+    <string name="error">Ошибка</string>
+    <string name="success">Успешно</string>
+    <string name="loading">Загрузка...</string>
+</resources> 

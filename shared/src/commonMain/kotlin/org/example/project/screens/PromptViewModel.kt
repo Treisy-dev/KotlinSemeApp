@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import org.koin.core.component.inject
 
 data class PromptState(
     val prompt: String = "",
@@ -36,74 +37,87 @@ sealed class PromptEffect : UiEffect {
 
 class PromptViewModel(
     private val chatRepository: ChatRepository,
-    private val settingsRepository: SettingsRepository,
     private val platform: Platform
-) : BaseViewModel<PromptState, PromptEvent, PromptEffect>(PromptState()) {
-
+) : BaseViewModel<PromptState, PromptEvent, PromptEffect>(
+    PromptState()
+) {
     override fun handleEvent(event: PromptEvent) {
         when (event) {
-            is PromptEvent.UpdatePrompt -> {
-                setState { copy(prompt = event.text) }
+            is PromptEvent.UpdatePrompt -> updatePrompt(event.text)
+            is PromptEvent.SelectImage -> selectImage(event.path)
+            is PromptEvent.PickImage -> pickImage()
+            is PromptEvent.TakePhoto -> takePhoto()
+            is PromptEvent.ClearImage -> clearImage()
+            is PromptEvent.SendPrompt -> sendPrompt()
+        }
+    }
+
+    private fun updatePrompt(text: String) {
+        setState { copy(prompt = text) }
+    }
+
+    private fun selectImage(path: String) {
+        println("PromptViewModel: selectImage called with path: $path")
+        setState { copy(imagePath = path) }
+    }
+
+    private fun pickImage() {
+        println("PromptViewModel: pickImage called")
+        println("PromptViewModel: platform = $platform")
+        viewModelScope.launch {
+            println("PromptViewModel: About to call platform.pickImage()")
+            val imagePath = platform.pickImage()
+            println("PromptViewModel: platform.pickImage() returned: $imagePath")
+            if (imagePath != null) {
+                println("PromptViewModel: Setting imagePath to: $imagePath")
+                setState { copy(imagePath = imagePath) }
+            } else {
+                println("PromptViewModel: imagePath is null, not updating state")
             }
-            is PromptEvent.SelectImage -> {
-                setState { copy(imagePath = event.path) }
+        }
+    }
+
+    private fun takePhoto() {
+        println("PromptViewModel: takePhoto called")
+        viewModelScope.launch {
+            val imagePath = platform.takePhoto()
+            println("PromptViewModel: platform.takePhoto() returned: $imagePath")
+            if (imagePath != null) {
+                setState { copy(imagePath = imagePath) }
             }
-            is PromptEvent.PickImage -> {
-                viewModelScope.launch {
-                    try {
-                        val imagePath = platform.pickImage()
-                        if (imagePath != null) {
-                            setState { copy(imagePath = imagePath) }
-                        }
-                    } catch (e: Exception) {
-                        setEffect { PromptEffect.ShowError("Failed to pick image: ${e.message}") }
-                    }
+        }
+    }
+
+    private fun clearImage() {
+        println("PromptViewModel: clearImage called")
+        setState { copy(imagePath = null) }
+    }
+
+    private fun sendPrompt() {
+        if (state.value.prompt.isBlank()) {
+            setEffect { PromptEffect.ShowError("Please enter a prompt") }
+            return
+        }
+
+        viewModelScope.launch {
+            setState { copy(isLoading = true, error = null) }
+            try {
+                val sessionId = chatRepository.createSession(state.value.prompt.take(50))
+                val result = chatRepository.sendMessage(
+                    sessionId = sessionId,
+                    content = state.value.prompt,
+                    imagePath = state.value.imagePath
+                )
+
+                if (result.isSuccess) {
+                    setEffect { PromptEffect.NavigateToChat(sessionId) }
+                } else {
+                    setEffect { PromptEffect.ShowError(result.exceptionOrNull()?.message ?: "Unknown error") }
                 }
-            }
-            is PromptEvent.TakePhoto -> {
-                viewModelScope.launch {
-                    try {
-                        val imagePath = platform.takePhoto()
-                        if (imagePath != null) {
-                            setState { copy(imagePath = imagePath) }
-                        }
-                    } catch (e: Exception) {
-                        setEffect { PromptEffect.ShowError("Failed to take photo: ${e.message}") }
-                    }
-                }
-            }
-            is PromptEvent.SendPrompt -> {
-                if (currentState.prompt.isBlank()) {
-                    setEffect { PromptEffect.ShowError("Please enter a prompt") }
-                    return
-                }
-                
-                viewModelScope.launch {
-                    setState { copy(isLoading = true, error = null) }
-                    
-                    try {
-                        val sessionId = chatRepository.createSession(currentState.prompt.take(50))
-                        val result = chatRepository.sendMessage(
-                            sessionId = sessionId,
-                            content = currentState.prompt,
-                            imagePath = currentState.imagePath
-                        )
-                        
-                        if (result.isSuccess) {
-                            setEffect { PromptEffect.NavigateToChat(sessionId) }
-                            setEffect { PromptEffect.ShowSuccess("Message sent successfully") }
-                        } else {
-                            setEffect { PromptEffect.ShowError("Failed to send message: ${result.exceptionOrNull()?.message}") }
-                        }
-                    } catch (e: Exception) {
-                        setEffect { PromptEffect.ShowError("Error: ${e.message}") }
-                    } finally {
-                        setState { copy(isLoading = false) }
-                    }
-                }
-            }
-            is PromptEvent.ClearImage -> {
-                setState { copy(imagePath = null) }
+            } catch (e: Exception) {
+                setEffect { PromptEffect.ShowError(e.message ?: "Unknown error") }
+            } finally {
+                setState { copy(isLoading = false) }
             }
         }
     }

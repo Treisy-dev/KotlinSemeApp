@@ -1,203 +1,190 @@
 package org.example.project.screens
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.navigator.LocalNavigator
-import cafe.adriel.voyager.navigator.currentOrThrow
-import org.example.project.navigation.SharedScreen
-import org.koin.core.context.GlobalContext
+import org.koin.compose.koinInject
+import org.example.project.platform.LocalImage
+import org.example.project.localization.LocalLocalizationManager
 
 @Composable
-fun PromptScreen() {
-    val navigator = LocalNavigator.currentOrThrow
-    val viewModel: PromptViewModel = remember { GlobalContext.get().get<PromptViewModel>() }
+fun PromptScreen(
+    viewModel: PromptViewModel = koinInject(),
+    onNavigateToChat: (String) -> Unit = {}
+) {
     val state by viewModel.state.collectAsState()
+    val focusRequester = remember { FocusRequester() }
+    val localizationManager = LocalLocalizationManager.current
+    
+    println("PromptScreen: prompt changed to: '${state.prompt}'")
     
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             when (effect) {
                 is PromptEffect.NavigateToChat -> {
-                    navigator.push(SharedScreen.Chat)
+                    onNavigateToChat(effect.sessionId)
                 }
                 is PromptEffect.ShowError -> {
-                    // TODO: Show error toast
+                    println("Error: ${effect.message}")
                 }
                 is PromptEffect.ShowSuccess -> {
-                    // TODO: Show success toast
+                    println("Success: ${effect.message}")
                 }
             }
         }
     }
     
     Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp)
+        modifier = Modifier.fillMaxSize()
     ) {
-        // Header
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
+            horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(onClick = { navigator.pop() }) {
-                Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-            }
             Text(
-                text = "New Chat",
+                text = localizationManager.getString("prompt_title"),
                 style = MaterialTheme.typography.headlineSmall
             )
-            IconButton(onClick = { navigator.push(SharedScreen.Settings) }) {
-                Icon(Icons.Default.Settings, contentDescription = "Settings")
-            }
         }
         
-        Spacer(modifier = Modifier.height(16.dp))
-        
-        // Image selection
         Card(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
         ) {
             Column(
                 modifier = Modifier.padding(16.dp)
             ) {
-                Text(
-                    text = "Add Image (Optional)",
-                    style = MaterialTheme.typography.titleMedium
+                TextField(
+                    value = state.prompt,
+                    onValueChange = { 
+                        println("PromptScreen TextField onValueChange: $it")
+                        viewModel.handleEvent(PromptEvent.UpdatePrompt(it)) 
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .focusRequester(focusRequester),
+                    placeholder = { Text(localizationManager.getString("prompt_placeholder")) },
+                    maxLines = 4,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
+                    keyboardActions = KeyboardActions(
+                        onSend = {
+                            if (state.prompt.isNotBlank()) {
+                                viewModel.handleEvent(PromptEvent.SendPrompt)
+                            }
+                        }
+                    ),
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = MaterialTheme.colorScheme.surface,
+                        unfocusedContainerColor = MaterialTheme.colorScheme.surface
+                    )
                 )
                 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(16.dp))
                 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Button(
-                        onClick = { viewModel.handleEvent(PromptEvent.PickImage) },
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        Icon(Icons.Default.Image, contentDescription = null)
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text("Gallery")
+                    Row {
+                        IconButton(
+                            onClick = { 
+                                println("Desktop: PickImage button clicked")
+                                viewModel.handleEvent(PromptEvent.PickImage) 
+                            }
+                        ) {
+                            Icon(Icons.Default.Image, contentDescription = localizationManager.getString("chat_attach_image"))
+                        }
+                        if (state.imagePath != null) {
+                            IconButton(
+                                onClick = { 
+                                    println("Desktop: ClearImage button clicked")
+                                    viewModel.handleEvent(PromptEvent.ClearImage) 
+                                }
+                            ) {
+                                Icon(Icons.Default.Clear, contentDescription = localizationManager.getString("prompt_clear"))
+                            }
+                        }
                     }
                     
                     Button(
-                        onClick = { viewModel.handleEvent(PromptEvent.TakePhoto) },
-                        modifier = Modifier.weight(1f)
+                        onClick = { 
+                            println("Desktop: SendPrompt button clicked")
+                            viewModel.handleEvent(PromptEvent.SendPrompt) 
+                        },
+                        enabled = state.prompt.isNotBlank() && !state.isLoading
                     ) {
-                        Icon(Icons.Default.CameraAlt, contentDescription = null)
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text("Camera")
+                        if (state.isLoading) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(16.dp),
+                                strokeWidth = 2.dp
+                            )
+                        } else {
+                            Icon(Icons.Default.Send, contentDescription = null)
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(localizationManager.getString("prompt_send"))
                     }
                 }
                 
-                // Selected image preview
+                // Image preview
                 state.imagePath?.let { imagePath ->
                     Spacer(modifier = Modifier.height(16.dp))
                     Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                        modifier = Modifier.fillMaxWidth().height(120.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surface
+                        )
                     ) {
                         Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(200.dp)
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
                         ) {
-                            // TODO: Load and display image
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .background(MaterialTheme.colorScheme.surfaceVariant),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text("Image Preview")
-                            }
-                            
-                            IconButton(
-                                onClick = { viewModel.handleEvent(PromptEvent.ClearImage) },
-                                modifier = Modifier.align(Alignment.TopEnd)
-                            ) {
-                                Icon(Icons.Default.Close, contentDescription = "Remove image")
-                            }
+                            LocalImage(
+                                path = imagePath,
+                                modifier = Modifier.fillMaxSize(),
+                                contentDescription = localizationManager.getString("chat_attach_image")
+                            )
                         }
                     }
                 }
             }
         }
         
-        Spacer(modifier = Modifier.height(16.dp))
-        
-        // Prompt input
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-        ) {
-            Column(
-                modifier = Modifier.padding(16.dp)
-            ) {
-                Text(
-                    text = "Your Prompt",
-                    style = MaterialTheme.typography.titleMedium
-                )
-                
-                Spacer(modifier = Modifier.height(8.dp))
-                
-                TextField(
-                    value = state.prompt,
-                    onValueChange = { viewModel.handleEvent(PromptEvent.UpdatePrompt(it)) },
-                    modifier = Modifier.fillMaxWidth(),
-                    placeholder = { Text("Describe what you want to know or ask...") },
-                    minLines = 3,
-                    maxLines = 6
-                )
-            }
-        }
-        
-        Spacer(modifier = Modifier.weight(1f))
-        
-        // Send button
-        Button(
-            onClick = { viewModel.handleEvent(PromptEvent.SendPrompt) },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = state.prompt.isNotBlank() && !state.isLoading
-        ) {
-            if (state.isLoading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(16.dp),
-                    color = MaterialTheme.colorScheme.onPrimary
-                )
-            } else {
-                Icon(Icons.Default.Send, contentDescription = null)
-            }
-            Spacer(modifier = Modifier.width(8.dp))
-            Text("Send to Gemini")
-        }
-        
         // Error display
         state.error?.let { error ->
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = error,
-                color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.bodySmall
-            )
+            Card(
+                modifier = Modifier.fillMaxWidth().padding(16.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)
+            ) {
+                Row(
+                    modifier = Modifier.padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        Icons.Default.Error,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onErrorContainer
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = error,
+                        color = MaterialTheme.colorScheme.onErrorContainer,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            }
         }
-    }
-}
-
-object PromptScreenRoute : Screen {
-    @Composable
-    override fun Content() {
-        PromptScreen()
     }
 } 

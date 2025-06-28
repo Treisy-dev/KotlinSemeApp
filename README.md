@@ -1,19 +1,130 @@
-# SemeApp - Kotlin Multiplatform AI Chat Application
+# SemeApp - AI Chat Application
 
-SemeApp is a modern Kotlin Multiplatform application that provides an AI chat interface with Gemini integration, supporting Android, iOS, and Desktop platforms. The app features a clean Material Design 3 interface, MVI architecture, and comprehensive functionality for text and image-based conversations.
+Многоплатформенное приложение для чата с AI (Gemini) на Kotlin Multiplatform с поддержкой Android, iOS и Desktop.
 
-## 🚀 Features
+## 🚀 Новый дизайн с Tab Bar
 
-- **Multiplatform Support**: Android (API 26+), iOS (16+), Desktop (JVM)
-- **AI Chat Interface**: Text and image-based conversations with Gemini AI
-- **Modern UI**: Material Design 3 with light/dark theme support
-- **MVI Architecture**: Clean, testable architecture with unidirectional data flow
-- **Dependency Injection**: Koin for dependency management
-- **Navigation**: Voyager-based navigation with bottom navigation
-- **Firebase Integration**: Analytics and Crashlytics support
-- **Resource Management**: Moko Resources for string and image localization
-- **Settings Screen**: Theme switching, language selection, history management
-- **Share Functionality**: Share AI responses across platforms
+Приложение теперь использует современный дизайн с таб баром для навигации между основными экранами:
+
+### 📱 iOS (SwiftUI)
+- **Chat** - основной чат с Gemini
+- **History** - история чатов
+- **New Chat** - создание нового чата
+- **Settings** - настройки приложения
+
+### 🤖 Android (Compose)
+- **Chat** - основной чат с Gemini
+- **History** - история чатов  
+- **New Chat** - создание нового чата
+- **Settings** - настройки приложения
+
+### 🖥️ Desktop (Compose)
+- **Chat** - основной чат с Gemini
+- **History** - история чатов
+- **New Chat** - создание нового чата
+- **Settings** - настройки приложения
+
+## 🎨 Дизайн
+
+### Иконки
+- **iOS**: Используются системные SF Symbols (`message.fill`, `clock.fill`, `plus.circle.fill`, `gear`)
+- **Android**: Используются Material Icons (`Message`, `History`, `Add`, `Settings`)
+- **Desktop**: Используются Material Icons
+
+### Цветовая схема
+- Поддержка светлой и темной темы
+- Material 3 Design System
+- Адаптивные цвета для каждой платформы
+
+## 🛠️ Технологии
+
+- **Kotlin Multiplatform** - общая бизнес-логика
+- **SwiftUI** - iOS UI
+- **Jetpack Compose** - Android UI
+- **Compose Multiplatform** - Desktop UI
+- **Koin** - Dependency Injection
+- **Voyager** - Навигация (Desktop)
+- **Navigation Compose** - Навигация (Android)
+- **Firebase** - Аналитика и крэш-репорты
+
+## 📁 Структура проекта
+
+```
+├── shared/                    # Общий код
+│   ├── src/commonMain/       # Общая бизнес-логика
+│   ├── src/androidMain/      # Android-специфичный код
+│   ├── src/iosMain/          # iOS-специфичный код
+│   └── src/desktopMain/      # Desktop-специфичный код
+├── composeApp/               # Android & Desktop приложения
+│   └── src/
+│       ├── androidMain/      # Android UI
+│       └── desktopMain/      # Desktop UI
+└── iosApp/                   # iOS приложение
+    └── iosApp/
+        ├── ContentView.swift # Основной TabView
+        ├── ChatView.swift    # Экран чата
+        ├── HistoryView.swift # Экран истории
+        ├── PromptView.swift  # Экран нового чата
+        ├── SettingsView.swift # Экран настроек
+        └── ViewModels.swift  # iOS ViewModels
+```
+
+## 🚀 Запуск
+
+### Android
+```bash
+./gradlew :composeApp:assembleDebug
+```
+
+### iOS
+```bash
+./gradlew :shared:podInstall
+# Откройте iosApp/iosApp.xcworkspace в Xcode
+```
+
+### Desktop
+```bash
+./gradlew :composeApp:run
+```
+
+### Быстрая сборка
+```bash
+./build-fast.sh
+```
+
+## 📱 Функции
+
+- 💬 Чат с AI (Gemini)
+- 📸 Поддержка изображений
+- 📚 История чатов
+- ⚙️ Настройки темы и языка
+- 🔄 Синхронизация между платформами
+- 📊 Firebase аналитика
+
+## 🎯 Особенности дизайна
+
+1. **Единообразный UX** - одинаковый интерфейс на всех платформах
+2. **Нативные иконки** - используются системные иконки каждой платформы
+3. **Адаптивный дизайн** - оптимизирован для разных размеров экранов
+4. **Material 3** - современный дизайн-система
+5. **Темная тема** - поддержка системных настроек
+
+## 🔧 Настройка
+
+### iOS
+- Добавлены разрешения для камеры и фото библиотеки
+- Настроен TabView с системными иконками
+- Интеграция с shared модулем через Koin
+
+### Android  
+- Настроен Navigation Compose с TabRow
+- Material 3 дизайн
+- Интеграция с shared модулем
+
+### Desktop
+- Compose Multiplatform UI
+- Навигация через TabRow
+- Адаптивный дизайн для больших экранов
 
 ## 📋 Requirements
 

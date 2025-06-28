@@ -15,13 +15,22 @@ plugins {
 
 kotlin {
     androidTarget {
-        @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
     
-    jvm("desktop")
+    jvm("desktop") {
+        compilations.all {
+            kotlinOptions {
+                jvmTarget = "11"
+                freeCompilerArgs += listOf(
+                    "-Xopt-in=kotlin.RequiresOptIn",
+                    "-Xjvm-default=all"
+                )
+            }
+        }
+    }
     
     sourceSets {
         val desktopMain by getting
@@ -29,9 +38,11 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
-            implementation(libs.firebase.bom)
+            implementation(dependencies.platform(libs.firebase.bom))
             implementation(libs.firebase.analytics)
             implementation(libs.firebase.crashlytics)
+            implementation(libs.koin.android)
+            // Navigation Compose
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -63,6 +74,8 @@ kotlin {
             implementation(libs.kotlinx.coroutinesSwing)
             // Koin
             implementation(libs.koin.core)
+            // Shared module
+            implementation(projects.shared)
             // Java AWT for desktop features
             implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
         }

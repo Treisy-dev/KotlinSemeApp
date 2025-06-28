@@ -1,5 +1,7 @@
 package org.example.project
 
+import org.example.project.platform.getPlatform
+
 class Greeting {
     private val platform = getPlatform()
 

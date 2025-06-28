@@ -20,24 +20,4 @@ data class ChatSession(
     val lastMessage: String,
     val timestamp: Instant,
     val hasImage: Boolean = false
-)
-
-@Serializable
-data class GeminiRequest(
-    val prompt: String,
-    val imageData: String? = null,
-    val maxTokens: Int = 1000
-)
-
-@Serializable
-data class GeminiResponse(
-    val text: String,
-    val usage: Usage? = null
-)
-
-@Serializable
-data class Usage(
-    val promptTokens: Int,
-    val completionTokens: Int,
-    val totalTokens: Int
 ) 

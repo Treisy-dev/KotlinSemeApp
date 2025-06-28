@@ -4,6 +4,7 @@ import org.example.project.data.local.ChatDatabase
 import org.example.project.data.model.ChatMessage
 import org.example.project.data.model.ChatSession
 import kotlinx.coroutines.flow.Flow
+import com.benasher44.uuid.uuid4
 
 class ChatRepository(
     private val database: ChatDatabase,
@@ -71,6 +72,6 @@ class ChatRepository(
     }
     
     private fun generateId(): String {
-        return java.util.UUID.randomUUID().toString()
+        return uuid4().toString()
     }
 } 

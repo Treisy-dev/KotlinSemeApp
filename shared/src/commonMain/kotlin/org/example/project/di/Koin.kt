@@ -11,15 +11,20 @@ import org.example.project.data.local.ChatDatabase
 import org.example.project.data.local.ChatDatabaseImpl
 import org.example.project.data.local.SettingsStorage
 import org.example.project.data.local.SettingsStorageImpl
-import org.example.project.data.remote.GeminiApi
-import org.example.project.data.remote.GeminiApiImpl
+import org.example.project.data.remote.GeminiApiService
 import org.example.project.platform.Platform
 import org.example.project.platform.PlatformImpl
+import org.example.project.platform.ImageEncoder
 import org.example.project.share.ShareSheet
 import org.example.project.share.ShareSheetImpl
+import org.example.project.localization.LocalizationManager
+import org.example.project.localization.LocalizationManagerProvider
+import org.example.project.ui.design.ThemeManager
+import org.example.project.ui.design.ThemeManagerProvider
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 import org.koin.dsl.module
+import org.koin.mp.KoinPlatform
 
 fun initKoin(appModule: Module) {
     startKoin {
@@ -31,27 +36,27 @@ fun initKoin(appModule: Module) {
 }
 
 val sharedModule: Module = module {
-    // Platform-specific implementations
-    single<Platform> { PlatformImpl() }
-    single<ShareSheet> { ShareSheetImpl() }
+    // Platform-specific implementations (will be provided by platform modules)
+    // single<Platform> { PlatformImpl() } // Убрано - будет предоставлено платформенными модулями
+    // single<ShareSheet> { ShareSheetImpl() } // Убрано - будет предоставлено платформенными модулями
+    single { ImageEncoder() }
+    
+    // Localization and Theme
+    single { LocalizationManagerProvider.getInstance() }
+    single { ThemeManagerProvider.getInstance() }
     
     // Data layer
-    single<GeminiApi> { GeminiApiImpl() }
-    single<ChatDatabase> { ChatDatabaseImpl() }
-    single<SettingsStorage> { SettingsStorageImpl() }
+    single { GeminiApiService() }
+    // ChatDatabase and SettingsStorage will be provided by platform-specific modules
     
     // Repositories
     single { ChatRepository(get(), get()) }
     single { SettingsRepository(get()) }
-    single { GeminiRepository(get()) }
+    single { GeminiRepository(get(), get()) }
     
     // ViewModels
-    factory { ChatViewModel(get(), get(), get()) }
-    factory { SettingsViewModel(get()) }
-    factory { PromptViewModel(get(), get(), get()) }
-    factory { HistoryViewModel(get()) }
-}
-
-val desktopModule: Module = module {
-    // Desktop-specific dependencies will be added here
+    single { ChatViewModel(get(), get(), get()) }
+    single { SettingsViewModel(get()) }
+    single { PromptViewModel(get(), get()) }
+    single { HistoryViewModel(get()) }
 } 
