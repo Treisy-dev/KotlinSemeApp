@@ -3,6 +3,7 @@ import shared
 
 struct PromptView: View {
     @StateObject private var viewModel = PromptViewModelWrapper()
+    @StateObject private var localizationManager = LocalizationManager.shared
     @State private var promptText = ""
     @State private var showingImagePicker = false
     @State private var showingCamera = false
@@ -71,11 +72,11 @@ struct PromptView: View {
                     
                     // Prompt Input Card
                     VStack(alignment: .leading, spacing: 16) {
-                        Text("Your Prompt")
+                        Text(localizationManager.getString("prompt_title"))
                             .font(.title2)
                             .fontWeight(.medium)
                         
-                        TextField("Describe what you want to know or ask...", text: $promptText, axis: .vertical)
+                        TextField(localizationManager.getString("prompt_placeholder"), text: $promptText, axis: .vertical)
                             .textFieldStyle(RoundedBorderTextFieldStyle())
                             .lineLimit(3...6)
                     }
@@ -94,7 +95,7 @@ struct PromptView: View {
                                 Image(systemName: "arrow.up.circle.fill")
                             }
                             
-                            Text("Send to Gemini")
+                            Text(localizationManager.getString("prompt_send"))
                                 .fontWeight(.medium)
                         }
                         .frame(maxWidth: .infinity)
@@ -117,7 +118,7 @@ struct PromptView: View {
                 }
                 .padding()
             }
-            .navigationTitle("New Chat")
+            .navigationTitle(localizationManager.getString("chat_new_session"))
             .navigationBarTitleDisplayMode(.inline)
         }
         .sheet(isPresented: $showingImagePicker) {

@@ -10,6 +10,8 @@ import shared
 
 struct ContentView: View {
     @State private var selectedTab = 0
+    @StateObject private var themeManager = ThemeManager.shared
+    @StateObject private var localizationManager = LocalizationManager.shared
     
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -17,7 +19,7 @@ struct ContentView: View {
             ChatView()
                 .tabItem {
                     Image(systemName: "message.fill")
-                    Text("Chat")
+                    Text(localizationManager.getString("nav_chat"))
                 }
                 .tag(0)
             
@@ -25,7 +27,7 @@ struct ContentView: View {
             HistoryView()
                 .tabItem {
                     Image(systemName: "clock.fill")
-                    Text("History")
+                    Text(localizationManager.getString("nav_history"))
                 }
                 .tag(1)
             
@@ -33,7 +35,7 @@ struct ContentView: View {
             PromptView()
                 .tabItem {
                     Image(systemName: "plus.circle.fill")
-                    Text("New Chat")
+                    Text(localizationManager.getString("nav_prompts"))
                 }
                 .tag(2)
             
@@ -41,11 +43,16 @@ struct ContentView: View {
             SettingsView()
                 .tabItem {
                     Image(systemName: "gear")
-                    Text("Settings")
+                    Text(localizationManager.getString("nav_settings"))
                 }
                 .tag(3)
         }
         .accentColor(.blue)
+        .preferredColorScheme(themeManager.getCurrentTheme())
+        .onAppear {
+            // Update system theme on appear
+            themeManager.updateSystemTheme()
+        }
         .onChange(of: selectedTab) { newValue in
             trackTabSwitch(newValue)
         }

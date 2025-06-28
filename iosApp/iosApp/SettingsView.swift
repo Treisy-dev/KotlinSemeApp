@@ -3,14 +3,17 @@ import shared
 
 struct SettingsView: View {
     @StateObject private var viewModel = SettingsViewModelWrapper()
+    @StateObject private var themeManager = ThemeManager.shared
+    @StateObject private var localizationManager = LocalizationManager.shared
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         NavigationView {
             ScrollView {
                 VStack(spacing: 20) {
                     // Appearance Section
-                    SettingsSection(title: "Appearance") {
+                    SettingsSection(title: localizationManager.getString("settings_theme")) {
                         VStack(spacing: 16) {
                             // Dark Mode Toggle
                             HStack {
@@ -18,7 +21,7 @@ struct SettingsView: View {
                                     Image(systemName: "moon.fill")
                                         .foregroundColor(.blue)
                                     VStack(alignment: .leading) {
-                                        Text("Dark Mode")
+                                        Text(localizationManager.getString("theme_dark"))
                                             .font(.body)
                                         Text("Use dark theme")
                                             .font(.caption)
@@ -27,9 +30,9 @@ struct SettingsView: View {
                                 }
                                 Spacer()
                                 Toggle("", isOn: Binding(
-                                    get: { viewModel.isDarkMode },
+                                    get: { themeManager.isDarkMode },
                                     set: { 
-                                        viewModel.setDarkMode($0)
+                                        themeManager.setDarkMode($0)
                                         FirebaseAnalyticsManager.shared.trackSettingsChanged(settingName: "dark_mode", newValue: $0 ? "enabled" : "disabled")
                                     }
                                 ))
@@ -44,28 +47,28 @@ struct SettingsView: View {
                                 
                                 HStack(spacing: 8) {
                                     ThemeChip(
-                                        title: "Light",
-                                        isSelected: viewModel.themeMode == "light",
+                                        title: localizationManager.getString("theme_light"),
+                                        isSelected: themeManager.themeMode == "light",
                                         action: { 
-                                            viewModel.setThemeMode("light")
+                                            themeManager.setThemeMode("light")
                                             FirebaseAnalyticsManager.shared.trackSettingsChanged(settingName: "theme_mode", newValue: "light")
                                         }
                                     )
                                     
                                     ThemeChip(
-                                        title: "Dark",
-                                        isSelected: viewModel.themeMode == "dark",
+                                        title: localizationManager.getString("theme_dark"),
+                                        isSelected: themeManager.themeMode == "dark",
                                         action: { 
-                                            viewModel.setThemeMode("dark")
+                                            themeManager.setThemeMode("dark")
                                             FirebaseAnalyticsManager.shared.trackSettingsChanged(settingName: "theme_mode", newValue: "dark")
                                         }
                                     )
                                     
                                     ThemeChip(
-                                        title: "System",
-                                        isSelected: viewModel.themeMode == "system",
+                                        title: localizationManager.getString("theme_system"),
+                                        isSelected: themeManager.themeMode == "system",
                                         action: { 
-                                            viewModel.setThemeMode("system")
+                                            themeManager.setThemeMode("system")
                                             FirebaseAnalyticsManager.shared.trackSettingsChanged(settingName: "theme_mode", newValue: "system")
                                         }
                                     )
@@ -75,10 +78,10 @@ struct SettingsView: View {
                     }
                     
                     // Language Section
-                    SettingsSection(title: "Language") {
+                    SettingsSection(title: localizationManager.getString("settings_language")) {
                         HStack(spacing: 8) {
                             LanguageChip(
-                                title: "English",
+                                title: localizationManager.getString("language_english"),
                                 isSelected: viewModel.language == "en",
                                 action: { 
                                     viewModel.setLanguage("en")
@@ -87,7 +90,7 @@ struct SettingsView: View {
                             )
                             
                             LanguageChip(
-                                title: "Русский",
+                                title: localizationManager.getString("language_russian"),
                                 isSelected: viewModel.language == "ru",
                                 action: { 
                                     viewModel.setLanguage("ru")
@@ -98,7 +101,7 @@ struct SettingsView: View {
                     }
                     
                     // Data Management Section
-                    SettingsSection(title: "Data Management") {
+                    SettingsSection(title: localizationManager.getString("settings_data_management")) {
                         VStack(spacing: 12) {
                             Button(action: { 
                                 viewModel.clearAllData()
@@ -107,7 +110,7 @@ struct SettingsView: View {
                                 HStack {
                                     Image(systemName: "trash.fill")
                                         .foregroundColor(.red)
-                                    Text("Clear All Data")
+                                    Text(localizationManager.getString("clear_all_data"))
                                         .foregroundColor(.red)
                                     Spacer()
                                 }
@@ -123,7 +126,7 @@ struct SettingsView: View {
                                 HStack {
                                     Image(systemName: "square.and.arrow.up")
                                         .foregroundColor(.blue)
-                                    Text("Export Data")
+                                    Text(localizationManager.getString("share"))
                                         .foregroundColor(.blue)
                                     Spacer()
                                 }
@@ -135,10 +138,10 @@ struct SettingsView: View {
                     }
                     
                     // About Section
-                    SettingsSection(title: "About") {
+                    SettingsSection(title: localizationManager.getString("settings_about")) {
                         VStack(spacing: 12) {
                             HStack {
-                                Text("Version")
+                                Text(localizationManager.getString("app_version"))
                                 Spacer()
                                 Text(viewModel.appVersion)
                                     .foregroundColor(.secondary)
@@ -185,11 +188,11 @@ struct SettingsView: View {
                 }
                 .padding()
             }
-            .navigationTitle("Settings")
+            .navigationTitle(localizationManager.getString("settings_title"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Done") {
+                    Button(localizationManager.getString("done")) {
                         dismiss()
                     }
                 }
@@ -205,6 +208,7 @@ struct SettingsView: View {
 struct SettingsSection<Content: View>: View {
     let title: String
     let content: Content
+    @Environment(\.colorScheme) private var colorScheme
     
     init(title: String, @ViewBuilder content: () -> Content) {
         self.title = title
@@ -220,7 +224,7 @@ struct SettingsSection<Content: View>: View {
             content
         }
         .padding()
-        .background(Color(.systemGray6))
+        .background(colorScheme == .dark ? Color(.systemGray6) : Color(.systemGray6))
         .cornerRadius(12)
     }
 }
@@ -229,6 +233,7 @@ struct ThemeChip: View {
     let title: String
     let isSelected: Bool
     let action: () -> Void
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         Button(action: action) {
@@ -236,7 +241,7 @@ struct ThemeChip: View {
                 .font(.caption)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 6)
-                .background(isSelected ? Color.blue : Color(.systemGray5))
+                .background(isSelected ? Color.blue : (colorScheme == .dark ? Color(.systemGray5) : Color(.systemGray5)))
                 .foregroundColor(isSelected ? .white : .primary)
                 .cornerRadius(16)
         }
@@ -247,16 +252,17 @@ struct LanguageChip: View {
     let title: String
     let isSelected: Bool
     let action: () -> Void
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         Button(action: action) {
             Text(title)
-                .font(.body)
-                .padding(.horizontal, 16)
-                .padding(.vertical, 8)
-                .background(isSelected ? Color.blue : Color(.systemGray5))
+                .font(.caption)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+                .background(isSelected ? Color.blue : (colorScheme == .dark ? Color(.systemGray5) : Color(.systemGray5)))
                 .foregroundColor(isSelected ? .white : .primary)
-                .cornerRadius(20)
+                .cornerRadius(16)
         }
     }
 }

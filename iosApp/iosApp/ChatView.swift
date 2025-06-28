@@ -3,6 +3,7 @@ import shared
 
 struct ChatView: View {
     @StateObject private var viewModel = ChatViewModelWrapper()
+    @StateObject private var localizationManager = LocalizationManager.shared
     @State private var messageText = ""
     @State private var showingHistory = false
     @State private var showingSettings = false
@@ -21,7 +22,7 @@ struct ChatView: View {
                                         .font(.system(size: 64))
                                         .foregroundColor(.secondary)
                                     
-                                    Text("Start a conversation")
+                                    Text(localizationManager.getString("chat_new_session"))
                                         .font(.title2)
                                         .fontWeight(.medium)
                                     
@@ -43,7 +44,7 @@ struct ChatView: View {
                                     HStack {
                                         ProgressView()
                                             .scaleEffect(0.8)
-                                        Text("Gemini is thinking...")
+                                        Text(localizationManager.getString("chat_typing"))
                                             .font(.body)
                                             .foregroundColor(.secondary)
                                         Spacer()
@@ -71,7 +72,7 @@ struct ChatView: View {
                 VStack(spacing: 0) {
                     Divider()
                     HStack(spacing: 12) {
-                        TextField("Type your message...", text: $messageText, axis: .vertical)
+                        TextField(localizationManager.getString("chat_placeholder"), text: $messageText, axis: .vertical)
                             .textFieldStyle(RoundedBorderTextFieldStyle())
                             .lineLimit(1...4)
                         

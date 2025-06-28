@@ -3,6 +3,7 @@ import shared
 
 struct HistoryView: View {
     @StateObject private var viewModel = HistoryViewModelWrapper()
+    @StateObject private var localizationManager = LocalizationManager.shared
     @State private var selectedFilter: FilterType = .all
     @Environment(\.dismiss) private var dismiss
     
@@ -13,19 +14,19 @@ struct HistoryView: View {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 12) {
                         FilterChip(
-                            title: "All",
+                            title: localizationManager.getString("history_filter_all"),
                             isSelected: selectedFilter == .all,
                             action: { selectedFilter = .all; viewModel.setFilter(.all) }
                         )
                         
                         FilterChip(
-                            title: "Text Only",
+                            title: localizationManager.getString("history_filter_text"),
                             isSelected: selectedFilter == .textOnly,
                             action: { selectedFilter = .textOnly; viewModel.setFilter(.textOnly) }
                         )
                         
                         FilterChip(
-                            title: "With Image",
+                            title: localizationManager.getString("history_filter_image"),
                             isSelected: selectedFilter == .withImage,
                             action: { selectedFilter = .withImage; viewModel.setFilter(.withImage) }
                         )
@@ -46,7 +47,7 @@ struct HistoryView: View {
                             .font(.system(size: 64))
                             .foregroundColor(.secondary)
                         
-                        Text("No chat history")
+                        Text(localizationManager.getString("history_empty"))
                             .font(.title2)
                             .fontWeight(.medium)
                         
@@ -69,11 +70,11 @@ struct HistoryView: View {
                     .listStyle(PlainListStyle())
                 }
             }
-            .navigationTitle("Chat History")
+            .navigationTitle(localizationManager.getString("history_title"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Done") {
+                    Button(localizationManager.getString("done")) {
                         dismiss()
                     }
                 }
